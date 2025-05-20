@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+  <div class="text-center mb-5">
+    <h2 class="fw-bold">¿Cómo funciona el simulador SIMIN?</h2>
+    <p class="text-muted">Descubre cómo puedes evaluar tus inversiones antes de realizarlas.</p>
+  </div>
+
+  <div class="row g-4">
+    <!-- Paso 1 -->
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-clipboard-data"></i> Selección del instrumento o cartera</h5>
+          <p class="card-text">Puedes simular una inversión individual o una cartera completa que combine varios instrumentos.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paso 2 -->
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-currency-exchange"></i> Ingreso del monto</h5>
+          <p class="card-text">Elige cuánto deseas invertir. El sistema calculará cuántos títulos puedes adquirir y si hay remanente.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paso 3 -->
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-bar-chart"></i> Análisis del rendimiento</h5>
+          <p class="card-text">Se calcula el interés, ISR, valor final y se muestra un desglose detallado por instrumento.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paso 4 -->
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-file-earmark-pdf"></i> Exporta tu simulación</h5>
+          <p class="card-text">Guarda tus resultados como PDF o compártelos con un analista (si eres inversionista).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-5">
+    <a th:href="@{/instrumentos/consulta/list-public}" class="btn btn-primary btn-lg">
+      <i class="bi bi-play-circle"></i> Empezar a simular
+    </a>
+  </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

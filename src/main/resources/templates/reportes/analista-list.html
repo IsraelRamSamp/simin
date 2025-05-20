@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="mb-0">Reportes de Simulaciones</h4>
+      <span class="text-muted small">Visualiza tus propios reportes o los compartidos por inversionistas</span>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Tipo Reporte</th>
+        <th>Nombre</th>
+        <th>Correo</th>
+        <th>Origen</th>
+        <th>Fecha</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="r : ${reportes}">
+        <td th:text="${r.idReporte}">1</td>
+        <td th:text="${r.tipoReporteDescripcion}">Proyección</td>
+        <td th:text="${r.nombreUsuario}">Juan Pérez</td>
+        <td th:text="${r.correoUsuario}">juan.perez@correo.com</td>
+        <td>
+          <span class="badge bg-secondary" th:if="${r.tipoOrigen == 'CARTERA'}">Cartera</span>
+          <span class="badge bg-info text-dark" th:if="${r.tipoOrigen == 'INSTRUMENTO'}">Instrumento</span>
+          <span class="badge bg-light text-dark" th:if="${r.tipoOrigen == null}">N/D</span>
+        </td>
+        <td th:text="${#temporals.format(r.fechaReporte, 'dd/MM/yyyy HH:mm')}">01/01/2025 10:00</td>
+        <td class="text-center">
+          <a th:href="@{'/reportes/simulacion/' + ${r.idSimulacion} + '/ver'}"
+             class="btn btn-outline-secondary btn-sm me-1"
+             target="_blank" title="Ver PDF">
+            <i class="bi bi-file-earmark-pdf"></i>
+          </a>
+          <a th:href="@{'/reportes/simulacion/' + ${r.idSimulacion} + '/descargar'}"
+             class="btn btn-outline-primary btn-sm"
+             title="Descargar PDF">
+            <i class="bi bi-download"></i>
+          </a>
+        </td>
+      </tr>
+      <tr th:if="${reportes.isEmpty()}">
+        <td colspan="8" class="text-center text-muted">No hay reportes disponibles.</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <nav th:if="${totalPages > 1}" class="mt-4">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+        <a class="page-link" th:href="@{/reportes/analista(page=${currentPage - 1})}">Anterior</a>
+      </li>
+      <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+          th:classappend="${i == currentPage} ? 'active'">
+        <a class="page-link" th:href="@{/reportes/analista(page=${i})}" th:text="${i + 1}"></a>
+      </li>
+      <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+        <a class="page-link" th:href="@{/reportes/analista(page=${currentPage + 1})}">Siguiente</a>
+      </li>
+    </ul>
+  </nav>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

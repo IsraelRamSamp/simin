@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Detalle de la Simulación</h5>
+      <!-- Botón para analista -->
+      <a th:if="${param.from != null and param.from[0] == 'analista'}"
+         th:href="@{'/simulaciones/analista'(tipo=${param.tipo != null and param.tipo[0] != null ? param.tipo[0] : 'compartidas'})}"
+         class="btn btn-light btn-sm">
+        <i class="bi bi-arrow-left-circle"></i> Volver a la lista
+      </a>
+
+      <!-- Botón para administrador (cuando no viene de analista) -->
+      <a th:if="${(param.from == null or param.from[0] != 'analista') and #authorization.expression('hasRole(''ROLE_ADMIN'')')}"
+         th:href="@{/simulaciones/list}"
+         class="btn btn-light btn-sm">
+        <i class="bi bi-arrow-left-circle"></i> Volver a la lista
+      </a>
+
+      <!-- Botón para inversionista (cuando no viene de analista) -->
+      <a th:if="${(param.from == null or param.from[0] != 'analista') and #authorization.expression('hasRole(''ROLE_INVERSIONISTA'')')}"
+         th:href="@{/simulaciones/inversionista}"
+         class="btn btn-light btn-sm">
+        <i class="bi bi-arrow-left-circle"></i> Volver a la lista
+      </a>
+    </div>
+
+    <div class="card-body">
+      <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert" id="alert-success">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${mensaje}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+
+      <div th:if="${advertencia}" class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle me-2"></i>
+        <span th:text="${advertencia}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+
+      <dl class="row">
+        <dt class="col-sm-4">ID</dt>
+        <dd class="col-sm-8" th:text="${simulacionDto.idSimulacion}"></dd>
+
+        <dt class="col-sm-4">Usuario</dt>
+        <dd class="col-sm-8" th:text="${simulacionDto.nombreUsuario} + ' (' + ${simulacionDto.correoUsuario} + ')'"></dd>
+
+        <dt class="col-sm-4">Origen</dt>
+        <dd class="col-sm-8">
+          <span th:if="${simulacionDto.idCartera != null}" class="badge bg-secondary">Cartera</span>
+          <span th:unless="${simulacionDto.idCartera != null}" class="badge bg-info text-dark">Instrumento</span>
+        </dd>
+
+        <dt class="col-sm-4" th:if="${simulacionDto.idCartera != null}">Nombre de la Cartera</dt>
+        <dd class="col-sm-8" th:if="${simulacionDto.idCartera != null}" th:text="${simulacionDto.nombreCartera}"></dd>
+
+        <dt class="col-sm-4" th:if="${simulacionDto.idCartera == null}">Nombre del Instrumento</dt>
+        <dd class="col-sm-8" th:if="${simulacionDto.idCartera == null}" th:text="${simulacionDto.nombreInstrumento}"></dd>
+
+        <dt class="col-sm-4" th:if="${simulacionDto.idCartera == null}">Tipo de Instrumento</dt>
+        <dd class="col-sm-8" th:if="${simulacionDto.idCartera == null}" th:text="${simulacionDto.tipoInstrumentoDescripcion}"></dd>
+
+        <dt class="col-sm-4">Monto Invertido</dt>
+        <dd class="col-sm-8" th:text="${#numbers.formatDecimal(simulacionDto.montoInvertido, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></dd>
+
+        <dt class="col-sm-4">Fecha de Simulación</dt>
+        <dd class="col-sm-8" th:text="${#temporals.format(simulacionDto.fechaSimulacion, 'dd/MM/yyyy HH:mm')}"></dd>
+
+        <dt class="col-sm-4">Fecha de Finalización</dt>
+        <dd class="col-sm-8" th:text="${#temporals.format(simulacionDto.fechaFinalizacion, 'dd/MM/yyyy HH:mm')}"></dd>
+      </dl>
+
+      <div class="text-end mt-4">
+        <!-- Generar PDF -->
+        <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')
+              or (#authorization.expression('hasRole(''ROLE_INVERSIONISTA'')') and simulacionDto.esPropietario)
+              or (#authorization.expression('hasRole(''ROLE_ANALISTA'')') and (simulacionDto.esPropietario or simulacionDto.compartidaAnalista))}"
+           th:href="@{'/reportes/simulacion/' + ${simulacionDto.idSimulacion} + '/ver'}"
+           class="btn btn-outline-secondary"
+           target="_blank" title="Generar PDF">
+          <i class="bi bi-file-earmark-pdf"></i> Generar PDF
+        </a>
+
+        <!-- Eliminar simulación -->
+        <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')
+              or (#authorization.expression('hasRole(''ROLE_INVERSIONISTA'')') and simulacionDto.esPropietario)
+              or (#authorization.expression('hasRole(''ROLE_ANALISTA'')') and simulacionDto.esPropietario)}"
+           th:href="@{'/simulaciones/delete/' + ${simulacionDto.idSimulacion}}"
+           class="btn btn-outline-danger"
+           onclick="return confirm('¿Deseas eliminar esta simulación?');">
+          <i class="bi bi-trash"></i> Eliminar
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-4" th:if="${simulacionDto.detalles != null and !simulacionDto.detalles.isEmpty()}">
+    <div class="card-header bg-light">
+      <h6 class="mb-0">Visualización de Inversión y Rendimiento</h6>
+    </div>
+    <div class="card-body text-center">
+      <canvas id="graficaCetes" height="120"></canvas>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-6 mb-3">
+      <div class="card border-primary shadow-sm text-center">
+        <div class="card-body">
+          <h6 class="card-title text-primary">Monto Invertido</h6>
+          <p class="h5" th:text="${#numbers.formatDecimal(simulacionDto.montoInvertido, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 mb-3">
+      <div class="card border-info shadow-sm text-center">
+        <div class="card-body">
+          <h6 class="card-title text-info">Interés Bruto</h6>
+          <p class="h5" th:text="${#numbers.formatDecimal(simulacionDto.interesBruto, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 mb-3">
+      <div class="card border-danger shadow-sm text-center">
+        <div class="card-body">
+          <h6 class="card-title text-danger">ISR</h6>
+          <p class="h5" th:text="${#numbers.formatDecimal(simulacionDto.isr, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 mb-3">
+      <div class="card border-success shadow-sm text-center">
+        <div class="card-body">
+          <h6 class="card-title text-muted">Plazo</h6>
+          <p class="fs-5 fw-bold" th:text="${simulacionDto.plazoTexto}"></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 mb-3">
+      <div class="card border-dark shadow-sm text-center">
+        <div class="card-body">
+          <h5 class="card-title text-dark">Obtienes al Final</h5>
+          <p class="h4" th:text="${#numbers.formatDecimal(simulacionDto.valorFinal, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detalle por instrumento -->
+  <div class="container mt-5" th:if="${simulacionDto.detalles != null and !simulacionDto.detalles.isEmpty()}">
+    <h5 class="mb-3">Detalle por Instrumento</h5>
+
+    <!-- SIMULACIÓN POR CARTERA -->
+    <div th:if="${simulacionDto.idCartera != null}">
+      <div th:each="entry : ${detallesPorTipo}">
+        <h6 class="text-primary text-uppercase mt-4" th:text="'Instrumentos tipo ' + ${entry.key}"></h6>
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped align-middle text-center small">
+            <thead class="table-light">
+            <tr>
+              <th>Instrumento</th>
+              <th>Plazo</th>
+              <th>Monto Invertido</th>
+              <th>Títulos</th>
+              <th>Tasa</th>
+              <th>Inversión</th>
+              <th>Interés</th>
+              <th>Títulos Bonddia</th>
+              <th>Inversión Bonddia</th>
+              <th>Interés Bonddia</th>
+              <th>Remanente</th>
+              <th>ISR</th>
+              <th>Valor Final</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="detalle : ${entry.value}">
+              <td th:text="${detalle.nombreInstrumento}"></td>
+              <td th:text="${detalle.plazoTexto}"></td>
+              <td th:text="${#numbers.formatDecimal(detalle.montoInvertido, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></td>
+              <td th:text="${detalle.titulos}"></td>
+              <td>
+                <span th:text="${tipoUsaTasaCupon[entry.key]} ? 'Tasa Cupón' : 'Tasa Bruta'"></span>
+                <span th:text="${#numbers.formatDecimal(detalle.tasaBruta, 1, 'COMMA', 2, 'POINT')} + ' %'"></span>
+              </td>
+              <td th:text="${#numbers.formatDecimal(detalle.inversion, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></td>
+              <td th:text="${#numbers.formatDecimal(detalle.interes, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></td>
+              <td th:text="${detalle.titulosBonddia}"></td>
+              <td th:text="${#numbers.formatDecimal(detalle.inversionBonddia, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></td>
+              <td th:text="${#numbers.formatDecimal(detalle.interesBonddia, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></td>
+              <td th:text="${#numbers.formatDecimal(detalle.remanente, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></td>
+              <td th:text="${#numbers.formatDecimal(detalle.isrCalculado, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></td>
+              <td th:text="${#numbers.formatDecimal(detalle.valorFinal, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIMULACIÓN POR INSTRUMENTO -->
+    <div class="row" th:if="${simulacionDto.idCartera == null}">
+      <div class="col-md-12 mb-4" th:each="detalle : ${simulacionDto.detalles}">
+        <div class="row g-3 align-items-stretch">
+          <!-- Instrumento principal -->
+          <div class="col-md-6" th:if="${detalle.tipoInstrumento != 'BONDDIA'}">
+            <div class="card shadow-sm border-secondary h-100">
+              <div class="card-body">
+                <h6 class="card-title text-center fw-bold">
+                  <span th:text="${detalle.nombreInstrumento}">Instrumento</span>
+                  <small class="text-muted d-block" th:text="${detalle.tipoInstrumento}">Tipo</small>
+                </h6>
+                <ul class="list-group list-group-flush mt-3">
+                  <li class="list-group-item"><strong>Tasa:</strong>
+                    <span th:text="${#numbers.formatDecimal(detalle.tasaBruta, 1, 'COMMA', 2, 'POINT')} + ' %'"></span></li>
+                  <li class="list-group-item"><strong>Títulos:</strong> <span th:text="${detalle.titulos}"></span></li>
+                  <li class="list-group-item"><strong>Inversión:</strong>
+                    <span th:text="${#numbers.formatDecimal(detalle.inversion, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></span></li>
+                  <li class="list-group-item"><strong>Interés:</strong>
+                    <span th:text="${#numbers.formatDecimal(detalle.interes, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></span></li>
+                  <li class="list-group-item" th:if="${detalle.remanente > 0}">
+                    <strong>Remanente:</strong>
+                    <span th:text="${#numbers.formatDecimal(detalle.remanente, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- BONDDIA como parte del mismo DTO -->
+          <div class="col-md-6" th:if="${detalle.inversionBonddia > 0}">
+            <div class="card border-success shadow-sm h-100">
+              <div class="card-body">
+                <h6 class="card-title text-center text-uppercase fw-bold mb-3">
+                  BONDDIA
+                  <small class="text-muted d-block">Complemento</small>
+                </h6>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item"><strong>Tasa:</strong> <span>8.93 %</span></li>
+                  <li class="list-group-item"><strong>Títulos:</strong> <span th:text="${detalle.titulosBonddia}">0</span></li>
+                  <li class="list-group-item"><strong>Inversión:</strong>
+                    <span th:text="${#numbers.formatDecimal(detalle.inversionBonddia, 1, 'COMMA', 2, 'POINT')} + ' MXN'">0.00</span></li>
+                  <li class="list-group-item"><strong>Interés:</strong>
+                    <span th:text="${#numbers.formatDecimal(detalle.interesBonddia, 1, 'COMMA', 2, 'POINT')} + ' MXN'">0.00</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script th:inline="javascript">
+    const detalles = /*[[${simulacionDto.detalles}]]*/ [];
+
+    const labels = detalles.map((d, i) => d.nombreInstrumento || `Instrumento ${i + 1}`);
+    const inversiones = detalles.map(d => d.inversion);
+    const rendimientos = detalles.map(d => d.interes);
+
+    const ctx = document.getElementById('graficaCetes');
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Inversión',
+              data: inversiones,
+              backgroundColor: '#001f7f',
+              barPercentage: 0.8,
+              categoryPercentage: 0.6
+            },
+            {
+              label: 'Rendimiento',
+              data: rendimientos,
+              backgroundColor: '#69b3ff',
+              barPercentage: 0.4,
+              categoryPercentage: 0.6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return `${context.dataset.label}: $${context.parsed.y.toFixed(2)}`;
+                }
+              }
+            },
+            legend: {
+              position: 'bottom'
+            },
+            title: {
+              display: true,
+              text: 'Comparativo por Instrumento'
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Monto (MXN)'
+              }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<script>
+  setTimeout(() => {
+    const alert = document.getElementById("alert-success");
+    if (alert) alert.remove();
+  }, 5000);
+</script>
+</body>
+</html>

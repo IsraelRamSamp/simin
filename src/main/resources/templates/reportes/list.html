@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+    <!-- Título -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-0">Reportes Generados</h4>
+            <span class="text-muted small">Aquí podrás consultar y volver a descargar los reportes generados por el sistema.</span>
+        </div>
+    </div>
+
+    <!-- Formulario de filtros -->
+    <form th:action="@{/reportes/list}" method="get" class="row g-2 mb-4 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label mb-0 small">Fecha desde</label>
+            <input type="date" name="fechaInicio" class="form-control form-control-sm" th:value="${fechaInicio}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label mb-0 small">Fecha hasta</label>
+            <input type="date" name="fechaFin" class="form-control form-control-sm" th:value="${fechaFin}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label mb-0 small">Correo</label>
+            <input type="text" name="correo" class="form-control form-control-sm" placeholder="Correo del usuario" th:value="${correo}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label mb-0 small">Nombre</label>
+            <input type="text" name="nombre" class="form-control form-control-sm" placeholder="Nombre del usuario" th:value="${nombre}">
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-search"></i> Buscar
+            </button>
+            <a th:href="@{/reportes/list}" class="btn btn-outline-danger btn-sm ms-1">
+                <i class="bi bi-x-circle"></i> Limpiar
+            </a>
+        </div>
+    </form>
+
+    <!-- Alerta si no hay reportes -->
+    <div th:if="${#lists.isEmpty(reportes)}" class="alert alert-info d-flex align-items-center" role="alert">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        Aún no se han generado reportes. Puedes generarlos desde el detalle de cada simulación.
+    </div>
+
+    <!-- Tabla de reportes -->
+    <div th:if="${not #lists.isEmpty(reportes)}" class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Tipo de Reporte</th>
+                <th>Origen</th>
+                <th>Usuario</th>
+                <th>Correo</th>
+                <th>Fecha de Generación</th>
+                <th class="text-center">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="reporte : ${reportes}">
+                <td th:text="${reporte.idReporte}"></td>
+                <td th:text="${reporte.tipoReporteDescripcion}">Tipo</td>
+                <td th:text="${reporte.getTipoOrigen()}"></td>
+                <td th:text="${reporte.getNombreUsuario()}"></td>
+                <td th:text="${reporte.getCorreoUsuario()}"></td>
+                <td th:text="${#temporals.format(reporte.fechaReporte, 'dd/MM/yyyy HH:mm')}"></td>
+                <td class="text-center">
+                    <!-- Botón para ver el PDF en el navegador -->
+                    <a th:href="@{/reportes/simulacion/{id}/ver(id=${reporte.idSimulacion})}"
+                       class="btn btn-outline-primary btn-sm me-1"
+                       title="Ver PDF" target="_blank">
+                        <i class="bi bi-eye"></i>
+                    </a>
+
+                    <!-- Botón para descargar el PDF -->
+                    <a th:href="@{/reportes/simulacion/{id}/descargar(id=${reporte.idSimulacion})}"
+                       class="btn btn-outline-secondary btn-sm"
+                       title="Descargar PDF">
+                        <i class="bi bi-file-earmark-arrow-down"></i>
+                    </a>
+
+                    <a th:if="${#authorization.expression('hasRole(''ADMIN'') or (hasRole(''ANALISTA'') and !reporte.compartido) or (hasRole(''INVERSIONISTA'') and principal.username == reporte.correoUsuario)')}"
+                       th:href="@{'/reportes/simulacion/' + ${reporte.idSimulacion} + '/eliminar'}"
+                       class="btn btn-outline-danger btn-sm"
+                       title="Eliminar Reporte"
+                       onclick="return confirm('¿Estás seguro de que deseas eliminar este reporte?');">
+                        <i class="bi bi-trash"></i>
+                    </a>
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Paginación -->
+    <nav th:if="${totalPages > 1}" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/reportes/list(page=${currentPage - 1}, fechaInicio=${fechaInicio}, fechaFin=${fechaFin}, correo=${correo}, nombre=${nombre})}">Anterior</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link"
+                   th:href="@{/reportes/list(page=${i}, fechaInicio=${fechaInicio}, fechaFin=${fechaFin}, correo=${correo}, nombre=${nombre})}"
+                   th:text="${i + 1}"></a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/reportes/list(page=${currentPage + 1}, fechaInicio=${fechaInicio}, fechaFin=${fechaFin}, correo=${correo}, nombre=${nombre})}">Siguiente</a>
+            </li>
+        </ul>
+    </nav>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<script>
+    setTimeout(() => {
+        const alert = document.getElementById("alert-success");
+        if (alert) alert.remove();
+    }, 5000);
+</script>
+</body>
+</html>

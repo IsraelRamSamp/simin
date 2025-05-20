@@ -1,0 +1,8 @@
+package mx.dgtic.unam.simin.exception;
+
+public class UsuarioNotFoundException extends RuntimeException {
+
+    public UsuarioNotFoundException(String message) {
+        super(message);
+    }
+}

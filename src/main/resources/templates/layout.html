@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
+      lang="es">
+<head th:fragment="head">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${pageTitle != null} ? ${pageTitle} : 'SIMIN - Sistema de Inversión'">SIMIN</title>
+  <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+  <link th:href="@{/icons/bootstrap-icons.css}" rel="stylesheet">
+  <link th:href="@{/theme/miestilo.css}" rel="stylesheet">
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<!-- HEADER -->
+<header th:fragment="header">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" th:href="@{/home}">SIMIN</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSimin">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSimin">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+          <!-- PÚBLICO GENERAL -->
+          <li class="nav-item" sec:authorize="!isAuthenticated()">
+            <a class="nav-link" th:href="@{/que-es-simin}">¿Qué es SIMIN?</a>
+          </li>
+          <li class="nav-item" sec:authorize="!isAuthenticated()">
+            <a class="nav-link" th:href="@{/contenido-educativo}">Contenido Educativo</a>
+          </li>
+          <li class="nav-item" sec:authorize="!isAuthenticated()">
+            <a class="nav-link" th:href="@{/acerca-de}">Acerca de</a>
+          </li>
+          <li class="nav-item" sec:authorize="!isAuthenticated()">
+            <a class="nav-link" th:href="@{/contacto}">Contacto</a>
+          </li>
+
+          <!-- ADMIN -->
+          <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
+            <a class="nav-link" th:href="@{/usuarios/list}">Usuarios</a>
+          </li>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
+            <a class="nav-link" th:href="@{/instrumentos/list}">Instrumentos</a>
+          </li>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
+            <a class="nav-link" th:href="@{/carteras/list}">Carteras</a>
+          </li>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
+            <a class="nav-link" th:href="@{/simulaciones/list}">Simulaciones</a>
+          </li>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
+            <a class="nav-link" th:href="@{/reportes/list}">Reportes</a>
+          </li>
+
+          <!-- INVERSIONISTA -->
+          <li class="nav-item" sec:authorize="hasRole('ROLE_INVERSIONISTA')">
+            <a class="nav-link" th:href="@{/carteras/list}">Carteras</a>
+          </li>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_INVERSIONISTA')">
+            <a class="nav-link" th:href="@{/simulaciones/inversionista}">Simulaciones</a>
+          </li>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_INVERSIONISTA')">
+            <a class="nav-link" th:href="@{/instrumentos/consulta/list-public}">Instrumentos</a>
+          </li>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_INVERSIONISTA')">
+            <a class="nav-link" th:href="@{/contenido-educativo}">Contenido Educativo</a>
+          </li>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_INVERSIONISTA')">
+            <a class="nav-link" th:href="@{/reportes/mis-reportes}">Reportes</a>
+          </li>
+
+          <!-- ANALISTA -->
+          <li class="nav-item" sec:authorize="hasRole('ROLE_ANALISTA')">
+            <a class="nav-link" th:href="@{/carteras/list}">Carteras</a>
+          </li>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_ANALISTA')">
+            <a class="nav-link" th:href="@{/simulaciones/analista(tipo='compartidas')}">Simulaciones</a>
+          </li>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_ANALISTA')">
+            <a class="nav-link" th:href="@{/instrumentos/consulta/list-public}">Instrumentos</a>
+          </li>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_ANALISTA')">
+            <a class="nav-link" th:href="@{/contenido-educativo}">Contenido Educativo</a>
+          </li>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_ANALISTA')">
+            <a class="nav-link" th:href="@{/reportes/analista}">Reportes</a>
+          </li>
+
+        </ul>
+
+        <!-- SESIÓN -->
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+            <a class="nav-link dropdown-toggle" href="#" id="perfilDropdown" role="button" data-bs-toggle="dropdown">
+              <i class="bi bi-person-circle"></i> Mi cuenta
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li sec:authorize="!hasRole('ROLE_ADMIN')">
+                <a class="dropdown-item" th:href="@{/usuario/perfil}">Ver perfil</a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <form th:action="@{/logout}" method="post">
+                  <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                </form>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item" sec:authorize="!isAuthenticated()">
+            <a class="btn btn-outline-light ms-2" th:href="@{/login}">Iniciar sesión</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- MAIN -->
+<main th:fragment="contenido" class="container py-4 flex-grow-1">
+  <!-- Aquí va el contenido específico de cada vista -->
+</main>
+
+<!-- FOOTER -->
+<footer th:fragment="footer" class="bg-dark text-white text-center py-4 mt-5">
+  <div class="container">
+    <p class="mb-1">SIMIN - Simulador de Inversiones en Instrumentos de Renta Fija</p>
+    <small>&copy; 2025 - Todos los derechos reservados</small>
+  </div>
+  <script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+</footer>
+
+</body>
+</html>

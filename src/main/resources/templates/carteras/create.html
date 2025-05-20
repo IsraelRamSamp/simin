@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Crear Nueva Cartera</h5>
+                </div>
+                <div class="card-body">
+
+                    <form th:action="@{/carteras/create}" th:object="${carteraDto}" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                        <!-- Nombre -->
+                        <div class="mb-3">
+                            <label class="form-label">Nombre de la Cartera</label>
+                            <input type="text" class="form-control" th:field="*{nombre}" placeholder="Ej. Cartera A" required>
+                            <div class="text-danger" th:errors="*{nombre}"></div>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="mb-3">
+                            <label class="form-label">Descripción</label>
+                            <textarea class="form-control" th:field="*{descripcion}" rows="3"
+                                      placeholder="Breve descripción de la cartera..."></textarea>
+                            <div class="text-danger" th:errors="*{descripcion}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Perfil de Riesgo</label>
+                            <select class="form-select" th:field="*{idPerfilRiesgo}" required>
+                                <option value="">Seleccionar Perfil</option>
+                                <option th:each="perfil : ${perfilesRiesgo}"
+                                        th:value="${perfil.idPerfilRiesgo}"
+                                        th:text="${perfil.descripcion}">
+                                </option>
+                            </select>
+                            <div class="text-danger" th:errors="*{idPerfilRiesgo}"></div>
+                        </div>
+
+                        <!-- Buscar usuario (solo ADMIN) -->
+                        <div class="mb-3" sec:authorize="hasRole('ROLE_ADMIN')">
+                            <label class="form-label">Buscar usuario por correo</label>
+                            <input type="text" id="correoUsuario" class="form-control" placeholder="Ingrese correo del usuario">
+                            <div id="sugerencias" class="list-group mt-1"></div>
+                            <input type="hidden" name="idUsuario" id="idUsuario">
+                        </div>
+
+                        <!-- Campo oculto para otros roles -->
+                        <div sec:authorize="!hasRole('ROLE_ADMIN')">
+                            <input type="hidden" name="idUsuario" th:value="${idUsuarioActual}" />
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a th:href="@{/carteras/list}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Guardar
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<!-- Script de autocompletado -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const inputCorreo = document.getElementById("correoUsuario");
+        const sugerencias = document.getElementById("sugerencias");
+        const idUsuarioInput = document.getElementById("idUsuario");
+
+        if (inputCorreo) {
+            inputCorreo.addEventListener("input", function () {
+                const query = inputCorreo.value;
+                if (query.length < 1) {
+                    sugerencias.innerHTML = "";
+                    return;
+                }
+
+                fetch(`/usuarios/buscar?correo=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        sugerencias.innerHTML = "";
+                        data.forEach(usuario => {
+                            const item = document.createElement("a");
+                            item.href = "#";
+                            item.classList.add("list-group-item", "list-group-item-action");
+                            item.textContent = `${usuario.nombre} - ${usuario.correo}`;
+                            item.addEventListener("click", function (e) {
+                                e.preventDefault();
+                                inputCorreo.value = usuario.correo;
+                                idUsuarioInput.value = usuario.id;
+                                sugerencias.innerHTML = "";
+                            });
+                            sugerencias.appendChild(item);
+                        });
+                    });
+            });
+
+            document.addEventListener("click", function (e) {
+                if (!sugerencias.contains(e.target) && e.target !== inputCorreo) {
+                    sugerencias.innerHTML = "";
+                }
+            });
+        }
+    });
+</script>
+
+<style>
+    #sugerencias a:hover {
+        background-color: #f0f0f0;
+        cursor: pointer;
+    }
+</style>
+
+</body>
+</html>

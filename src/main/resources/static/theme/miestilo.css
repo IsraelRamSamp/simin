@@ -1,0 +1,157 @@
+/* General */
+html, body {
+    height: 100%;
+    background-color: #f8f9fa; /* gris claro */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #212529;
+}
+
+/* Títulos */
+h1, h2, h3 {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Botones */
+.btn-primary {
+    background-color: #0056b3;
+    border-color: #004b99;
+}
+
+.btn-primary:hover {
+    background-color: #004494;
+    border-color: #003d82;
+}
+
+.btn-success {
+    background-color: #198754;
+    border-color: #157347;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #bb2d3b;
+}
+
+/* Tablas */
+.table {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+}
+
+.table thead {
+    background-color: #343a40;
+    color: #fff;
+}
+
+.table td, .table th {
+    vertical-align: middle;
+}
+
+/* Formularios */
+input[type="text"],
+input[type="email"],
+input[type="number"],
+input[type="password"],
+select,
+textarea {
+    border-radius: 0.375rem;
+    border: 1px solid #ced4da;
+    padding: 0.5rem;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #80bdff;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+/* Cards */
+.card {
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Links */
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Footer */
+footer {
+    font-size: 0.9rem;
+}
+
+html, body {
+    height: 100%;
+}
+body {
+    display: flex;
+    flex-direction: column;
+}
+main {
+    flex: 1;
+}
+
+.form-check-label small {
+    font-size: 0.85rem;
+}
+
+.simin-header {
+    margin-bottom: 2rem;
+}
+
+.simin-brand {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 700;
+    font-size: 3rem;
+    background: linear-gradient(90deg, #0d6efd, #6610f2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    animation: fadeInDown 0.8s ease-out;
+}
+
+.s-inicial {
+    font-size: 3.5rem;
+    color: #0d6efd;
+    font-weight: 900;
+    text-shadow: 1px 2px 4px rgba(13, 110, 253, 0.35);
+}
+
+.simin-subtitle {
+    font-size: 0.95rem;
+    color: #6c757d;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    margin-top: 0.2rem;
+    animation: fadeInUp 0.9s ease-out;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

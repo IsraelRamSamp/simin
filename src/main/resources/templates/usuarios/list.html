@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0">Lista de Usuarios</h4>
+    <a class="btn btn-outline-success btn-sm" th:href="@{/usuarios/create}">
+      <i class="bi bi-plus-circle"></i> Nuevo Usuario
+    </a>
+  </div>
+
+  <!-- Alerta de éxito -->
+  <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert" id="alert-success">
+    <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${mensaje}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+  </div>
+
+  <!-- Formulario de búsqueda y filtro -->
+  <form th:action="@{/usuarios/list}" method="get" class="row g-2 mb-3 align-items-end">
+    <div class="col-md-5">
+      <input type="text" name="keyword" class="form-control form-control-sm" placeholder="Buscar por nombre o correo" th:value="${keyword}">
+    </div>
+    <div class="col-md-3">
+      <select name="tipo" class="form-select form-select-sm">
+        <option value="">Todos los tipos</option>
+        <option th:each="tipo : ${tiposUsuario}"
+                th:value="${tipo.idTipoUsuario}"
+                th:text="${tipo.descripcion}"
+                th:selected="${tipo.idTipoUsuario == tipoSeleccionado}"></option>
+      </select>
+    </div>
+    <div class="col-auto">
+      <button type="submit" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-search"></i> Buscar
+      </button>
+      <a th:href="@{/usuarios/list}" class="btn btn-outline-danger btn-sm ms-1">
+        <i class="bi bi-x-circle"></i> Limpiar
+      </a>
+    </div>
+  </form>
+
+  <!-- Tabla de resultados -->
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Tipo de Usuario</th>
+        <th>Nombre</th>
+        <th>Correo Electrónico</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="usuario : ${usuarios}">
+        <td th:text="${usuario.idUsuario}"></td>
+        <td th:text="${usuario.tipoUsuarioDescripcion}"></td>
+        <td th:text="${usuario.nombre + ' ' + usuario.apellidoPaterno + (usuario.apellidoMaterno != null ? ' ' + usuario.apellidoMaterno : '')}"></td>
+        <td th:text="${usuario.correo}"></td>
+        <td class="text-center">
+          <a th:href="@{/usuarios/view/{id}(id=${usuario.idUsuario})}" class="btn btn-outline-info btn-sm me-1" title="Ver">
+            <i class="bi bi-eye"></i>
+          </a>
+          <a th:href="@{/usuarios/edit/{id}(id=${usuario.idUsuario})}" class="btn btn-outline-primary btn-sm me-1" title="Editar">
+            <i class="bi bi-pencil-square"></i>
+          </a>
+          <a th:href="@{/usuarios/delete/{id}(id=${usuario.idUsuario})}" class="btn btn-outline-danger btn-sm"
+             onclick="return confirm('¿Estás seguro de eliminar este usuario?');" title="Eliminar">
+            <i class="bi bi-trash"></i>
+          </a>
+        </td>
+      </tr>
+      <tr th:if="${usuarios.size() == 0}">
+        <td colspan="5" class="text-center text-muted">No se encontraron usuarios con esos filtros.</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  <nav th:if="${totalPages > 1}" class="mt-4">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+        <a class="page-link" th:href="@{/usuarios/list(page=${currentPage - 1}, keyword=${keyword}, tipo=${tipoSeleccionado})}">Anterior</a>
+      </li>
+      <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+          th:classappend="${i == currentPage} ? 'active'">
+        <a class="page-link"
+           th:href="@{/usuarios/list(page=${i}, keyword=${keyword}, tipo=${tipoSeleccionado})}"
+           th:text="${i + 1}"></a>
+      </li>
+      <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+        <a class="page-link" th:href="@{/usuarios/list(page=${currentPage + 1}, keyword=${keyword}, tipo=${tipoSeleccionado})}">Siguiente</a>
+      </li>
+    </ul>
+  </nav>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<!-- Script para ocultar la alerta -->
+<script>
+  setTimeout(() => {
+    const success = document.getElementById("alert-success");
+    if (success) success.remove();
+  }, 5000);
+</script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Editar Instrumento en Cartera</h5>
+      <a th:href="@{'/carteras/view/' + ${instrumentoCarteraDto.idCartera}}" class="btn btn-light btn-sm">
+        <i class="bi bi-arrow-left-circle"></i> Volver a cartera
+      </a>
+    </div>
+    <div class="card-body">
+
+      <!-- Alerta de éxito -->
+      <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert" id="alert-success">
+        <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${mensaje}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+
+      <!-- Alerta de error -->
+      <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert" id="alert-error">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+
+      <form th:action="@{/instrumentos-cartera/edit}"
+            th:object="${instrumentoCarteraDto}" method="post" class="row g-3">
+
+        <!-- IDs ocultos -->
+        <input type="hidden" th:field="*{idInstrumentosCartera}" />
+        <input type="hidden" th:field="*{idInstrumento}" />
+        <input type="hidden" th:field="*{idCartera}" />
+
+        <!-- Instrumento (no editable) -->
+        <div class="col-md-6">
+          <label class="form-label">Instrumento</label>
+          <input type="text" class="form-control" th:value="${instrumentoCarteraDto.nombreInstrumento}" disabled>
+        </div>
+
+        <!-- Tipo de Instrumento (no editable) -->
+        <div class="col-md-6">
+          <label class="form-label">Tipo de Instrumento</label>
+          <input type="text" class="form-control" id="tipoInstrumentoInput"
+                 th:value="${instrumentoCarteraDto.tipoInstrumentoDescripcion}" disabled>
+          <input type="hidden" th:field="*{tipoInstrumentoDescripcion}"/>
+        </div>
+
+        <!-- Monto confirmado -->
+        <div class="col-md-6">
+          <label for="montoInvertido" class="form-label">Monto a Invertir</label>
+          <input type="number" th:field="*{montoInvertido}" min="1" step="0.01"
+                 class="form-control" placeholder="Ej. 1000.00" required>
+        </div>
+
+        <!-- Precio de Mercado (no editable) -->
+        <div class="col-md-6">
+          <label class="form-label">Precio de Mercado</label>
+          <input type="text" class="form-control"
+                 th:value="${#numbers.formatDecimal(instrumentoCarteraDto.precioMercado, 1, 'COMMA', 2, 'POINT')}" disabled>
+        </div>
+
+        <!-- Plazo en días para BONDDIA -->
+        <div class="col-md-6" id="plazoBonddiaField" style="display: none;">
+          <label for="plazoDiasBonddia" class="form-label">Plazo (en días)</label>
+          <input type="number" class="form-control"
+                 th:field="*{plazoDiasBonddia}" min="1" placeholder="Ej. 28">
+          <div class="text-danger small mt-1" th:if="${#fields.hasErrors('plazoDiasBonddia')}" th:errors="*{plazoDiasBonddia}"></div>
+        </div>
+
+        <!-- Botón -->
+        <div class="col-12 text-end">
+          <button type="submit" class="btn btn-warning">
+            <i class="bi bi-save"></i> Guardar Cambios
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const tipo = document.getElementById("tipoInstrumentoInput").value.trim().toUpperCase();
+    const plazoField = document.getElementById("plazoBonddiaField");
+    if (tipo === "BONDDIA") {
+      plazoField.style.display = "block";
+    }
+  });
+
+  // Ocultar alertas después de 5 segundos
+  setTimeout(() => {
+    document.getElementById("alert-success")?.remove();
+    document.getElementById("alert-error")?.remove();
+  }, 5000);
+</script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+
+  <!-- Encabezado principal -->
+  <div class="text-center mb-5">
+    <h2 class="fw-bold">Contenido Educativo</h2>
+    <p class="text-muted">Aprende sobre instrumentos financieros, inversiones inteligentes y manejo de carteras.</p>
+  </div>
+
+  <!-- Tarjetas introductorias -->
+  <div class="row g-4 mb-5">
+    <!-- Tarjeta 1 -->
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 shadow border-0">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title mb-2">¿Qué es un CETE?</h5>
+          <p class="card-text flex-grow-1">Los CETES son instrumentos de deuda emitidos por el gobierno mexicano. Aprende cómo funcionan y por qué son considerados seguros.</p>
+          <a href="https://www.gob.mx/cetesdirecto" target="_blank" class="btn btn-outline-primary btn-sm mt-auto">Leer más</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjeta 2 -->
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 shadow border-0">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title mb-2">Diversificación de carteras</h5>
+          <p class="card-text flex-grow-1">Aprende por qué es importante no poner todos tus recursos en un solo instrumento y cómo puedes balancear tu inversión.</p>
+          <a href="https://www.bbva.mx/educacion-financiera" target="_blank" class="btn btn-outline-primary btn-sm mt-auto">Leer más</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjeta 3 -->
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 shadow border-0">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title mb-2">Simulaciones de inversión</h5>
+          <p class="card-text flex-grow-1">Conoce cómo utilizar el simulador de SIMIN para evaluar rendimientos antes de invertir. Ideal para principiantes.</p>
+          <a th:href="@{/simulaciones/informacion}" class="btn btn-outline-primary btn-sm mt-auto">Ir al simulador</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Secciones detalladas -->
+  <div class="row">
+    <div class="col-lg-12">
+
+      <!-- Sección 1 -->
+      <section class="mb-5">
+        <h4 class="fw-semibold">1. ¿Qué es un instrumento de renta fija?</h4>
+        <p>Un <strong>instrumento de renta fija</strong> es una inversión que genera ingresos constantes y predecibles, como intereses, durante un plazo determinado. Son comúnmente emitidos por gobiernos o instituciones financieras.</p>
+        <p>Algunos ejemplos comunes son los <strong>CETES</strong>, <strong>BONOS</strong>, <strong>UDIBONOS</strong>, <strong>BONDDIA</strong> y <strong>REPORTOS</strong>.</p>
+        <p>Su principal ventaja es la seguridad: el inversionista conoce desde el inicio la tasa, el plazo y el monto que recibirá.</p>
+      </section>
+
+      <!-- Sección 2 -->
+      <section class="mb-5">
+        <h4 class="fw-semibold">2. Tipos de instrumentos soportados en SIMIN</h4>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><strong>CETES:</strong> Títulos a descuento, sin intereses, emitidos por el gobierno.</li>
+          <li class="list-group-item"><strong>BONOS:</strong> Pagan cupones periódicos y devuelven el capital al final.</li>
+          <li class="list-group-item"><strong>UDIBONOS:</strong> Bonos ajustados por inflación para proteger tu poder adquisitivo.</li>
+          <li class="list-group-item"><strong>BONDDIA:</strong> Fondo de liquidez diaria con rendimiento constante.</li>
+          <li class="list-group-item"><strong>REPORTOS:</strong> Acuerdo de recompra a futuro (actualmente no habilitado).</li>
+        </ul>
+      </section>
+
+      <!-- Sección 3 -->
+      <section class="mb-5">
+        <h4 class="fw-semibold">3. Fórmulas utilizadas en el simulador</h4>
+        <div class="bg-light border rounded p-3 mb-3">
+          <p class="fw-bold mb-1">CETES:</p>
+          <code>Precio = Valor Nominal / (1 + (Tasa * Plazo / 360))</code><br>
+          <code>Interés = Valor Final - Inversión</code><br>
+          <code>ISR = Interés * 0.15</code><br>
+          <code>Valor Final = Inversión - ISR + Interés</code>
+        </div>
+
+        <div class="bg-light border rounded p-3 mb-3">
+          <p class="fw-bold mb-1">BONOS:</p>
+          <code>Interés = Valor Nominal * (Tasa Cupón / Frecuencia)</code><br>
+          <code>Valor Final = Suma de cupones + Valor nominal</code>
+        </div>
+
+        <div class="bg-light border rounded p-3 mb-3">
+          <p class="fw-bold mb-1">UDIBONOS:</p>
+          <code>Valor Final = Valor Nominal ajustado por inflación + Cupones</code>
+        </div>
+
+        <div class="bg-light border rounded p-3">
+          <p class="fw-bold mb-1">BONDDIA:</p>
+          <code>Rendimiento Diario = Inversión * (Tasa / 360)</code><br>
+          <code>Valor Final = Inversión + (Rendimiento Diario * Días)</code>
+        </div>
+      </section>
+
+      <!-- Sección 4 -->
+      <section class="mb-5">
+        <h4 class="fw-semibold">4. Ejemplo práctico</h4>
+        <div class="bg-white border rounded p-3 shadow-sm">
+          <p><strong>Simulación con CETES a 28 días:</strong></p>
+          <ul>
+            <li>Inversión: <strong>$10,000</strong></li>
+            <li>Tasa bruta anual: <strong>10%</strong></li>
+            <li>Plazo: <strong>28 días</strong></li>
+            <li>Precio estimado: <strong>$992.22</strong></li>
+            <li>Títulos: <strong>10.08</strong></li>
+            <li>Interés bruto: <strong>$77.78</strong></li>
+            <li>ISR: <strong>$11.67</strong></li>
+            <li><strong>Valor Final: $10,066.11</strong></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Sección 5 -->
+      <section class="mb-5">
+        <h4 class="fw-semibold">5. Glosario de términos</h4>
+        <dl class="row">
+          <dt class="col-sm-4">Valor Nominal</dt>
+          <dd class="col-sm-8">Monto base del título, por ejemplo $10 o $100 por unidad.</dd>
+
+          <dt class="col-sm-4">Tasa Bruta</dt>
+          <dd class="col-sm-8">Rendimiento sin descontar impuestos.</dd>
+
+          <dt class="col-sm-4">Tasa Cupón</dt>
+          <dd class="col-sm-8">Porcentaje de interés pagado periódicamente.</dd>
+
+          <dt class="col-sm-4">ISR</dt>
+          <dd class="col-sm-8">Impuesto sobre la renta, aplicado a las ganancias (15% en simulador).</dd>
+
+          <dt class="col-sm-4">Rendimiento</dt>
+          <dd class="col-sm-8">Ganancia neta que se obtiene después de impuestos.</dd>
+
+          <dt class="col-sm-4">Valor Final</dt>
+          <dd class="col-sm-8">Monto total recibido al finalizar la inversión.</dd>
+        </dl>
+      </section>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

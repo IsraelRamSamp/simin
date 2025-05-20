@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container mt-5">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Agregar Instrumento a Cartera</h5>
+      <a th:href="@{'/carteras/view/' + ${instrumentoCarteraDto.idCartera}}" class="btn btn-light btn-sm">
+        <i class="bi bi-arrow-left-circle"></i> Volver a la cartera
+      </a>
+    </div>
+
+    <div class="card-body">
+      <!-- Alerta de éxito -->
+      <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert" id="alert-message">
+        <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${mensaje}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+
+      <!-- Alerta de error -->
+      <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+
+      <form th:action="@{/carteras/add-instrumento}" method="post" th:object="${instrumentoCarteraDto}" class="row g-3">
+        <input type="hidden" th:field="*{idCartera}"/>
+
+        <!-- Selección del instrumento -->
+        <div class="col-md-6">
+          <label for="idInstrumento" class="form-label">Instrumento</label>
+          <select th:field="*{idInstrumento}" class="form-select" id="idInstrumento" required>
+            <option value="">Seleccione un instrumento</option>
+            <option th:each="inst : ${instrumentos}"
+                    th:value="${inst.idInstrumento}"
+                    th:text="${inst.nombre}"
+                    th:attr="data-tipo=${inst.tipoInstrumento.descripcion}">Instrumento</option>
+          </select>
+          <div class="text-danger" th:errors="*{idInstrumento}"></div>
+        </div>
+
+        <!-- Monto a invertir -->
+        <div class="col-md-6">
+          <label for="montoInvertido" class="form-label">Monto a Invertir (MXN)</label>
+          <input type="number" min="1" step="0.01" th:field="*{montoInvertido}" class="form-control"
+                 id="montoInvertido" placeholder="Ej. 1000.00" required>
+          <div class="text-danger" th:errors="*{montoInvertido}"></div>
+        </div>
+
+        <!-- Plazo para BONDDIA -->
+        <div class="col-md-6" id="bonddia-section" style="display:none;">
+          <label class="form-label">Plazo en días para BONDDIA</label>
+          <input type="number" class="form-control" th:field="*{plazoDiasBonddia}" min="1" />
+          <div class="text-danger" th:errors="*{plazoDiasBonddia}"></div>
+        </div>
+
+        <!-- Botón de acción -->
+        <div class="col-12 text-end">
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Agregar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<script>
+  setTimeout(function () {
+    const alert = document.getElementById('alert-message');
+    if (alert) {
+      alert.classList.remove('show');
+      alert.classList.add('fade');
+      setTimeout(() => alert.remove(), 500);
+    }
+  }, 5000);
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const select = document.getElementById("idInstrumento");
+    const bonddiaSection = document.getElementById("bonddia-section");
+
+    function toggleBonddiaField() {
+      const selectedOption = select.options[select.selectedIndex];
+      const tipo = selectedOption.getAttribute("data-tipo");
+      bonddiaSection.style.display = tipo === "BONDDIA" ? "block" : "none";
+    }
+
+    select.addEventListener("change", toggleBonddiaField);
+    toggleBonddiaField(); // ejecuta al cargar por si ya hay uno seleccionado
+  });
+
+</script>
+
+</body>
+</html>

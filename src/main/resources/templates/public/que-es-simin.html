@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+
+  <!-- Encabezado con animación -->
+  <div class="text-center mb-5">
+    <h1 class="fw-bold display-5 animate__animated animate__fadeInDown">¿Qué es SIMIN?</h1>
+    <p class="text-muted fs-5 animate__animated animate__fadeInUp animate__delay-1s">
+      Un simulador educativo de inversiones en instrumentos de renta fija.
+    </p>
+  </div>
+
+  <!-- Historia del proyecto -->
+  <section class="mb-5">
+    <div class="row align-items-center g-4">
+      <div class="col-md-6 animate__animated animate__fadeInLeft">
+        <img src="/image/simin.png" class="img-fluid rounded shadow-sm" alt="Logo SIMIN">
+      </div>
+      <div class="col-md-6">
+        <h4 class="fw-semibold">Nuestra historia</h4>
+        <p>
+          SIMIN nació como un proyecto académico impulsado por un estudiante de ingeniería, Israel Samperio, apasionado por el desarrollo
+          tecnológico y el mundo financiero. Su propósito fue crear una herramienta accesible y moderna para ayudar
+          a nuevos inversionistas a entender cómo funcionan los <strong>instrumentos de renta fija</strong> y cómo pueden
+          simular el rendimiento de sus inversiones antes de comprometer su capital.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Objetivos -->
+  <section class="mb-5">
+    <h4 class="fw-semibold mb-3 text-primary">Objetivos del proyecto</h4>
+    <ul class="list-group list-group-flush animate__animated animate__fadeInUp">
+      <li class="list-group-item">✔️ Brindar educación financiera práctica mediante simulaciones reales.</li>
+      <li class="list-group-item">✔️ Ayudar a los usuarios a tomar decisiones más informadas al invertir.</li>
+      <li class="list-group-item">✔️ Facilitar el aprendizaje de términos clave como <em>rendimiento neto</em>, <em>interés</em>, <em>valor nominal</em> y más.</li>
+      <li class="list-group-item">✔️ Permitir la planificación estratégica mediante la creación de carteras simuladas.</li>
+    </ul>
+  </section>
+
+  <!-- Público objetivo -->
+  <section class="mb-5">
+    <h4 class="fw-semibold mb-3 text-primary">¿A quién está dirigido?</h4>
+    <p class="lead">
+      SIMIN está diseñado para:
+    </p>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title"><i class="bi bi-person-fill text-primary me-2"></i>Inversionistas principiantes</h5>
+            <p class="card-text">Que desean conocer cómo funcionaría una inversión sin arriesgar dinero real.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title"><i class="bi bi-graph-up-arrow text-success me-2"></i>Estudiantes y académicos</h5>
+            <p class="card-text">Interesados en aprender o enseñar finanzas, simulación y estrategias de inversión.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title"><i class="bi bi-people-fill text-warning me-2"></i>Analistas y educadores</h5>
+            <p class="card-text">Que desean compartir simulaciones o visualizar datos proyectados para asesoría.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Funcionalidades -->
+  <section class="mb-5">
+    <h4 class="fw-semibold mb-3 text-primary">¿Qué puedes hacer con SIMIN?</h4>
+    <div class="row g-4">
+      <div class="col-md-6">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">📈 Simular inversión en CETES, BONOS, UDIBONOS y más.</li>
+          <li class="list-group-item">💼 Crear carteras virtuales y distribuir capital entre instrumentos.</li>
+          <li class="list-group-item">📊 Visualizar rendimientos brutos, ISR y valor final proyectado.</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">📋 Descargar reportes en PDF de tus simulaciones.</li>
+          <li class="list-group-item">👥 Compartir resultados con asesores o compañeros.</li>
+          <li class="list-group-item">📚 Acceder a contenido educativo dentro del sistema.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="text-center mt-5">
+    <a th:href="@{/register}" class="btn btn-lg btn-primary px-4 py-2 shadow-sm">
+      <i class="bi bi-person-plus-fill me-2"></i> Comienza a simular ahora
+    </a>
+  </div>
+
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<!-- Animaciones opcionales -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" />
+</body>
+</html>

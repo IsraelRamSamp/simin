@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+
+  <!-- Encabezado -->
+  <div class="text-center mb-5">
+    <h1 class="fw-bold display-5 animate__animated animate__fadeInDown">Acerca de SIMIN</h1>
+    <p class="text-muted fs-5 animate__animated animate__fadeInUp animate__delay-1s">
+      Conoce al equipo detrás de esta plataforma y nuestra visión a futuro.
+    </p>
+  </div>
+
+  <!-- Misión y visión -->
+  <section class="mb-5 row g-4">
+    <div class="col-md-6 animate__animated animate__fadeInLeft">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h4 class="card-title text-primary">🎯 Misión</h4>
+          <p class="card-text">
+            Democratizar el conocimiento financiero mediante herramientas intuitivas que permitan a cualquier persona
+            simular, entender y planificar inversiones en instrumentos de renta fija con confianza y sin riesgos.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 animate__animated animate__fadeInRight">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h4 class="card-title text-success">🌟 Visión</h4>
+          <p class="card-text">
+            Convertirnos en la plataforma educativa líder en simulación de inversiones en Latinoamérica, integrando
+            educación financiera, visualizaciones avanzadas y acceso a simulaciones realistas con datos actualizados.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Valores -->
+  <section class="mb-5">
+    <h4 class="fw-semibold text-primary mb-3">Nuestros valores</h4>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      <div class="col">
+        <div class="card h-100 text-center border-0 shadow-sm">
+          <div class="card-body">
+            <i class="bi bi-shield-check display-5 text-primary mb-3"></i>
+            <h5 class="card-title">Transparencia</h5>
+            <p class="card-text">Toda la lógica y resultados de simulación se explican claramente con fórmulas visibles y sin letras pequeñas.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card h-100 text-center border-0 shadow-sm">
+          <div class="card-body">
+            <i class="bi bi-lightbulb display-5 text-warning mb-3"></i>
+            <h5 class="card-title">Educación</h5>
+            <p class="card-text">Fomentamos el aprendizaje activo con contenido educativo, glosarios y simulaciones ilustrativas.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card h-100 text-center border-0 shadow-sm">
+          <div class="card-body">
+            <i class="bi bi-person-heart display-5 text-danger mb-3"></i>
+            <h5 class="card-title">Compromiso</h5>
+            <p class="card-text">Creemos que todos deben tener acceso a herramientas financieras sin necesidad de ser expertos.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sobre el equipo -->
+  <section class="mb-5">
+    <h4 class="fw-semibold text-primary mb-3">El equipo detrás de SIMIN</h4>
+    <p>
+      Este proyecto fue desarrollado por un estudiante de ingeniería, Israel Samperio, comprometido con la innovación tecnológica
+      y la educación financiera. A lo largo del desarrollo se aplicaron buenas prácticas en arquitectura de software,
+      desarrollo web fullstack y simulación de modelos económicos reales.
+    </p>
+    <p>
+      El sistema utiliza tecnologías modernas como <strong>Spring Boot</strong>, <strong>Thymeleaf</strong>,
+      <strong>Bootstrap</strong> y herramientas de seguridad como <strong>Spring Security</strong>, todo con un
+      enfoque educativo y profesional.
+    </p>
+  </section>
+
+  <!-- CTA -->
+  <div class="text-center mt-5">
+    <a th:href="@{/contenido-educativo}" class="btn btn-outline-primary btn-lg px-4 py-2">
+      <i class="bi bi-journal-text me-2"></i> Ver contenido educativo
+    </a>
+  </div>
+
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<!-- Animaciones opcionales -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" />
+</body>
+</html>

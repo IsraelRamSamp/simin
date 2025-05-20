@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+  <!-- Título -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0">Lista de Instrumentos</h4>
+    <a class="btn btn-outline-success btn-sm" th:href="@{/instrumentos/create}">
+      <i class="bi bi-plus-circle"></i> Nuevo Instrumento
+    </a>
+  </div>
+
+  <!-- Alertas -->
+  <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert" id="alert-message">
+    <i class="bi bi-check-circle-fill me-2"></i>
+    <span th:text="${mensaje}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+  </div>
+  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <span th:text="${error}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+  </div>
+
+  <!-- Filtros -->
+  <form method="get" th:action="@{/instrumentos/list}" class="row g-2 mb-3 align-items-end">
+    <div class="col-md-5">
+      <input type="text" class="form-control form-control-sm" name="keyword" th:value="${keyword}" placeholder="Buscar por nombre">
+    </div>
+    <div class="col-md-3">
+      <select name="tipo" class="form-select form-select-sm">
+        <option value="" th:selected="${tipo == null}">Todos los tipos</option>
+        <option th:each="t : ${tiposInstrumento}"
+                th:value="${t.idTipoInstrumento}"
+                th:text="${t.descripcion}"
+                th:selected="${tipo == t.idTipoInstrumento}">
+        </option>
+      </select>
+    </div>
+    <div class="col-auto">
+      <button type="submit" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-search"></i> Buscar
+      </button>
+      <a th:href="@{/instrumentos/list}" class="btn btn-outline-danger btn-sm ms-1">
+        <i class="bi bi-x-circle"></i> Limpiar
+      </a>
+    </div>
+  </form>
+
+  <!-- Tabla -->
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Tipo de Rendimiento</th>
+        <th>Tipo de Instrumento</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="instrumento : ${instrumentos.content}">
+        <td th:text="${instrumento.idInstrumento}"></td>
+        <td th:text="${instrumento.nombre}"></td>
+        <td th:text="${instrumento.descripcionAdicional}"></td>
+        <td th:text="${instrumento.tipoRendimiento}"></td>
+        <td th:text="${instrumento.tipoInstrumentoDescripcion}"></td>
+        <td class="text-center">
+          <a th:href="@{'/instrumentos/view/' + ${instrumento.idInstrumento}}" class="btn btn-outline-info btn-sm me-1" title="Ver">
+            <i class="bi bi-eye"></i>
+          </a>
+          <a th:href="@{'/instrumentos/edit/' + ${instrumento.idInstrumento}}" class="btn btn-outline-primary btn-sm me-1" title="Editar">
+            <i class="bi bi-pencil-square"></i>
+          </a>
+          <a th:href="@{'/instrumentos/delete/' + ${instrumento.idInstrumento}}" class="btn btn-outline-danger btn-sm"
+             onclick="return confirm('¿Estás seguro de eliminar este instrumento?');" title="Eliminar">
+            <i class="bi bi-trash"></i>
+          </a>
+        </td>
+      </tr>
+      <tr th:if="${instrumentos.content.isEmpty()}">
+        <td colspan="6" class="text-center text-muted">No se encontraron resultados con los filtros seleccionados.</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  <nav th:if="${instrumentos.totalPages > 1}" class="mt-4">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" th:classappend="${instrumentos.first} ? 'disabled'">
+        <a class="page-link" th:href="@{/instrumentos/list(page=${instrumentos.number - 1}, keyword=${keyword}, tipo=${tipo})}">Anterior</a>
+      </li>
+      <li class="page-item" th:each="i : ${#numbers.sequence(0, instrumentos.totalPages - 1)}"
+          th:classappend="${i == instrumentos.number} ? 'active'">
+        <a class="page-link" th:href="@{/instrumentos/list(page=${i}, keyword=${keyword}, tipo=${tipo})}" th:text="${i + 1}"></a>
+      </li>
+      <li class="page-item" th:classappend="${instrumentos.last} ? 'disabled'">
+        <a class="page-link" th:href="@{/instrumentos/list(page=${instrumentos.number + 1}, keyword=${keyword}, tipo=${tipo})}">Siguiente</a>
+      </li>
+    </ul>
+  </nav>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<script>
+  setTimeout(() => {
+    const alert = document.getElementById("alert-message");
+    if (alert) alert.remove();
+  }, 5000);
+</script>
+</body>
+</html>

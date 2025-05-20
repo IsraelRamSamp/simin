@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold">
+            <span th:if="${nombreUsuario != null}">
+                ¡Bienvenid@, <span th:text="${nombreUsuario}"></span>! <br> <span th:text="${tipoUsuario}"></span>
+            </span>
+            <span th:if="${nombreUsuario == null}">
+                Bienvenido a SIMIN
+            </span>
+        </h1>
+        <p class="lead">Simulador de Inversiones en Instrumentos de Renta Fija</p>
+        <img th:src="@{/image/simin.png}" alt="Logo SIMIN" class="img-fluid" style="max-width: 700px;">
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">¿Qué es SIMIN?</h5>
+                    <p class="card-text">SIMIN es una plataforma educativa diseñada para simular inversiones en instrumentos de renta fija como CETES, BONOS, BONDDIA y más. Aprende a invertir, conoce los rendimientos y gestiona tus decisiones financieras de manera segura.</p>
+                    <a th:href="@{/que-es-simin}" class="btn btn-outline-primary">Conocer más</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Contenido Educativo</h5>
+                    <p class="card-text">Accede a material educativo gratuito para aprender sobre inversión, perfiles de riesgo, tasas de interés, tipos de instrumentos y simulaciones financieras.</p>
+                    <a th:href="@{/contenido-educativo}" class="btn btn-outline-primary">Explorar contenido</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Acerca de SIMIN</h5>
+                    <p class="card-text">Conoce más sobre el proyecto, su origen y el equipo detrás de esta herramienta de simulación financiera.</p>
+                    <a th:href="@{/acerca-de}" class="btn btn-outline-primary">Saber más</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Contacto</h5>
+                    <p class="card-text">¿Tienes dudas o comentarios? Contáctanos y con gusto te apoyaremos.</p>
+                    <a th:href="@{/contacto}" class="btn btn-outline-primary">Contáctanos</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

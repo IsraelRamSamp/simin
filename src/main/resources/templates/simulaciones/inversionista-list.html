@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+  <!-- Título -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="mb-0">Mis Simulaciones</h4>
+      <span class="text-muted small">Simulaciones realizadas por el inversionista</span>
+    </div>
+  </div>
+
+  <!-- Alerta de éxito -->
+  <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert" id="alert-success">
+    <i class="bi bi-check-circle-fill me-2"></i>
+    <span th:text="${mensaje}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+  </div>
+
+  <!-- Alerta de error -->
+  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <span th:text="${error}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Origen</th>
+        <th>Nombre del Origen</th>
+        <th>Monto Invertido</th>
+        <th>Obtienes al final</th>
+        <th>Simulada</th>
+        <th>Finaliza</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="sim : ${simulaciones}">
+        <td th:text="${sim.idSimulacion}"></td>
+        <td>
+          <span th:if="${sim.idCartera != null}" class="badge bg-secondary">Cartera</span>
+          <span th:if="${sim.idCartera == null}" class="badge bg-info text-dark">Instrumento</span>
+        </td>
+        <td>
+          <span th:if="${sim.idCartera != null}" th:text="${sim.nombreCartera}">Cartera</span>
+          <span th:if="${sim.idCartera == null}" th:text="${sim.nombreInstrumento}">Instrumento</span>
+        </td>
+        <td th:text="${#numbers.formatDecimal(sim.montoInvertido, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></td>
+        <td th:text="${#numbers.formatDecimal(sim.valorFinal, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></td>
+        <td th:text="${#temporals.format(sim.fechaSimulacion, 'dd/MM/yyyy')}"></td>
+        <td th:text="${#temporals.format(sim.fechaFinalizacion, 'dd/MM/yyyy')}"></td>
+        <td class="text-center">
+          <a th:href="@{'/simulaciones/view/' + ${sim.idSimulacion} + '?from=inversionista'}"
+             class="btn btn-outline-info btn-sm me-1" title="Ver">
+            <i class="bi bi-eye"></i>
+          </a>
+          <a th:href="@{'/reportes/simulacion/' + ${sim.idSimulacion} + '/ver'}"
+             class="btn btn-outline-secondary btn-sm me-1" target="_blank" title="Generar PDF">
+            <i class="bi bi-file-earmark-pdf"></i>
+          </a>
+          <a th:href="@{'/simulaciones/inversionista/delete/' + ${sim.idSimulacion}}"
+             class="btn btn-outline-danger btn-sm"
+             onclick="return confirm('¿Deseas eliminar esta simulación?');"
+             title="Eliminar">
+            <i class="bi bi-trash"></i>
+          </a>
+        </td>
+      </tr>
+      <tr th:if="${simulaciones.isEmpty()}">
+        <td colspan="8" class="text-center text-muted">No se encontraron simulaciones.</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  <nav th:if="${totalPages > 1}" class="mt-4">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+        <a class="page-link" th:href="@{/simulaciones/inversionista(page=${currentPage - 1})}">Anterior</a>
+      </li>
+      <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+          th:classappend="${i == currentPage} ? 'active'">
+        <a class="page-link"
+           th:href="@{/simulaciones/inversionista(page=${i})}"
+           th:text="${i + 1}"></a>
+      </li>
+      <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+        <a class="page-link" th:href="@{/simulaciones/inversionista(page=${currentPage + 1})}">Siguiente</a>
+      </li>
+    </ul>
+  </nav>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<script>
+  setTimeout(() => {
+    const alert = document.getElementById("alert-success");
+    if (alert) alert.remove();
+  }, 5000);
+</script>
+</body>
+</html>

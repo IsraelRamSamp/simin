@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+  <!-- Título y botones -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="mb-0">Mis Simulaciones</h4>
+      <span class="text-muted small">Visualiza tus simulaciones personales o las compartidas por inversionistas</span>
+    </div>
+    <div>
+      <a class="btn btn-outline-primary btn-sm me-2"
+         th:href="@{/simulaciones/analista(tipo='personales')}"
+         th:classappend="${tipo == 'personales'} ? 'active'">
+        <i class="bi bi-person-fill"></i> Personales
+      </a>
+      <a class="btn btn-outline-secondary btn-sm"
+         th:href="@{/simulaciones/analista(tipo='compartidas')}"
+         th:classappend="${tipo == 'compartidas'} ? 'active'">
+        <i class="bi bi-people-fill"></i> Compartidas
+      </a>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th th:if="${tipo == 'compartidas'}">Inversionista</th>
+        <th>Origen</th>
+        <th>Nombre del Origen</th>
+        <th>Monto Invertido</th>
+        <th>Obtienes al final</th>
+        <th>Simulada</th>
+        <th>Finaliza</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="sim : ${simulaciones}">
+        <td th:text="${sim.idSimulacion}"></td>
+        <td th:if="${tipo == 'compartidas'}" th:text="${sim.nombreUsuario}"></td>
+        <td>
+          <span th:if="${sim.idCartera != null}" class="badge bg-secondary">Cartera</span>
+          <span th:if="${sim.idCartera == null}" class="badge bg-info text-dark">Instrumento</span>
+        </td>
+        <td>
+          <span th:if="${sim.idCartera != null}" th:text="${sim.nombreCartera}">Cartera X</span>
+          <span th:if="${sim.idCartera == null}" th:text="${sim.nombreInstrumento}">Instrumento Y</span>
+        </td>
+        <td th:text="${#numbers.formatDecimal(sim.montoInvertido, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></td>
+        <td th:text="${#numbers.formatDecimal(sim.valorFinal, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></td>
+        <td th:text="${#temporals.format(sim.fechaSimulacion, 'dd/MM/yyyy')}"></td>
+        <td th:text="${#temporals.format(sim.fechaFinalizacion, 'dd/MM/yyyy')}"></td>
+        <td class="text-center">
+          <a th:href="@{'/simulaciones/view/' + ${sim.idSimulacion} + '?from=analista'}"
+             class="btn btn-outline-info btn-sm me-1" title="Ver">
+            <i class="bi bi-eye"></i>
+          </a>
+          <a th:href="@{'/reportes/simulacion/' + ${sim.idSimulacion} + '/ver'}"
+             class="btn btn-outline-secondary btn-sm"
+             target="_blank" title="Generar PDF">
+            <i class="bi bi-file-earmark-pdf"></i>
+          </a>
+        </td>
+      </tr>
+      <tr th:if="${simulaciones.isEmpty()}">
+        <td th:colspan="${tipo == 'compartidas'} ? 9 : 8" class="text-center text-muted">
+          No se encontraron simulaciones disponibles.
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  <nav th:if="${totalPages > 1}" class="mt-4">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+        <a class="page-link"
+           th:href="@{'/simulaciones/analista'(tipo=${tipo}, page=${currentPage - 1})}">
+          Anterior
+        </a>
+      </li>
+      <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+          th:classappend="${i == currentPage} ? 'active'">
+        <a class="page-link"
+           th:href="@{'/simulaciones/analista'(tipo=${tipo}, page=${i})}"
+           th:text="${i + 1}"></a>
+      </li>
+      <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+        <a class="page-link"
+           th:href="@{'/simulaciones/analista'(tipo=${tipo}, page=${currentPage + 1})}">
+          Siguiente
+        </a>
+      </li>
+    </ul>
+  </nav>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

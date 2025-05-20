@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
+      lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container mt-5">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Detalles del Instrumento</h5>
+      <!-- Ruta dinámica según rol -->
+      <span sec:authorize="hasRole('ROLE_ADMIN')">
+  <a th:href="@{/instrumentos/list}" class="btn btn-light btn-sm">
+    <i class="bi bi-arrow-left-circle"></i> Volver a la lista
+  </a>
+</span>
+      <span sec:authorize="hasAnyRole('ROLE_INVERSIONISTA', 'ROLE_ANALISTA')">
+  <a th:href="@{/instrumentos/consulta/list-public}" class="btn btn-light btn-sm">
+    <i class="bi bi-arrow-left-circle"></i> Volver a la lista
+  </a>
+</span>
+    </div>
+    <div class="card-body">
+      <dl class="row">
+        <dt class="col-sm-4">ID:</dt>
+        <dd class="col-sm-8" th:text="${instrumento.idInstrumento}">1</dd>
+
+        <dt class="col-sm-4">Nombre:</dt>
+        <dd class="col-sm-8" th:text="${instrumento.nombre}">Instrumento</dd>
+
+        <dt class="col-sm-4">Tipo de Instrumento:</dt>
+        <dd class="col-sm-8" th:text="${instrumento.tipoInstrumentoDescripcion}">Tipo</dd>
+
+        <dt class="col-sm-4">Plazo en meses:</dt>
+        <dd class="col-sm-8" th:text="${instrumento.plazoMeses}">0</dd>
+
+        <dt class="col-sm-4">Plazo en años:</dt>
+        <dd class="col-sm-8" th:text="${instrumento.plazoAnos}">0</dd>
+
+        <th:block th:if="${instrumento.tipoInstrumentoDescripcion == 'BONO' or instrumento.tipoInstrumentoDescripcion == 'UDIBONOS'}">
+          <dt class="col-sm-4">Tasa Cupón:</dt>
+          <dd class="col-sm-8" th:text="${#numbers.formatDecimal(instrumento.tasaCupon, 1, 'COMMA', 2, 'POINT')} + ' %'">0.00 %</dd>
+        </th:block>
+        <th:block th:unless="${instrumento.tipoInstrumentoDescripcion == 'BONO' or instrumento.tipoInstrumentoDescripcion == 'UDIBONOS'}">
+          <dt class="col-sm-4">Tasa de interés:</dt>
+          <dd class="col-sm-8" th:text="${#numbers.formatDecimal(instrumento.tasaInteres, 1, 'COMMA', 2, 'POINT')} + ' %'">0.00 %</dd>
+        </th:block>
+
+        <dt class="col-sm-4">Valor nominal:</dt>
+        <dd class="col-sm-8" th:text="${#numbers.formatDecimal(instrumento.valorNominal, 1, 'COMMA', 2, 'POINT')}">0.00</dd>
+
+        <dt class="col-sm-4">Precio de mercado (MXN):</dt>
+        <dd class="col-sm-8" th:text="${#numbers.formatDecimal(instrumento.precioMercado, 1, 'COMMA', 2, 'POINT')}">0.00</dd>
+
+        <dt class="col-sm-4">Frecuencia de pagos:</dt>
+        <dd class="col-sm-8" th:text="${instrumento.frecuenciaPagos}">Frecuencia</dd>
+
+        <dt class="col-sm-4">Tipo de rendimiento:</dt>
+        <dd class="col-sm-8" th:text="${instrumento.tipoRendimiento}">Fijo</dd>
+
+        <dt class="col-sm-4">Descripción adicional:</dt>
+        <dd class="col-sm-8" th:text="${instrumento.descripcionAdicional}">-</dd>
+
+        <th:block th:if="${instrumento.tipoInstrumentoDescripcion == 'BONO' or instrumento.tipoInstrumentoDescripcion == 'UDIBONOS'}">
+          <dt class="col-sm-4">Fecha de Emisión:</dt>
+          <dd class="col-sm-8" th:text="${#temporals.format(instrumento.fechaEmision, 'dd/MM/yyyy HH:mm')}">-</dd>
+
+          <dt class="col-sm-4">Fecha de Vencimiento:</dt>
+          <dd class="col-sm-8" th:text="${#temporals.format(instrumento.fechaVencimiento, 'dd/MM/yyyy HH:mm')}">-</dd>
+        </th:block>
+      </dl>
+
+      <div class="text-end mt-4">
+        <!-- Simular: visible para todos -->
+        <a th:href="@{/simulaciones/simular-instrumento/{id}(id=${instrumento.idInstrumento})}"
+           class="btn btn-outline-success me-2">
+          <i class="bi bi-graph-up-arrow"></i> Simular este instrumento
+        </a>
+
+        <!-- Acciones solo para ADMIN -->
+        <span sec:authorize="hasRole('ROLE_ADMIN')">
+          <a th:href="@{'/instrumentos/edit/' + ${instrumento.idInstrumento}}" class="btn btn-outline-primary me-2">
+            <i class="bi bi-pencil"></i> Editar
+          </a>
+          <a th:href="@{'/instrumentos/delete/' + ${instrumento.idInstrumento}}"
+             class="btn btn-outline-danger"
+             onclick="return confirm('¿Estás seguro de eliminar este instrumento?');">
+            <i class="bi bi-trash"></i> Eliminar
+          </a>
+        </span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

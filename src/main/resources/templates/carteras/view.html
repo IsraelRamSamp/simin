@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Detalles de la cartera</h5>
+      <a th:href="@{/carteras/list}" class="btn btn-light btn-sm">
+        <i class="bi bi-arrow-left-circle"></i> Volver a la lista
+      </a>
+    </div>
+    <div class="card-body">
+      <dl class="row">
+        <dt class="col-sm-4">ID</dt>
+        <dd class="col-sm-8" th:text="${carteraDto.idCartera}"></dd>
+
+        <dt class="col-sm-4">Nombre</dt>
+        <dd class="col-sm-8" th:text="${carteraDto.nombre}"></dd>
+
+        <dt class="col-sm-4">Valor Total</dt>
+        <dd class="col-sm-8" th:text="${#numbers.formatDecimal(carteraDto.valorTotal, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></dd>
+
+        <dt class="col-sm-4">Fecha de Creación</dt>
+        <dd class="col-sm-8" th:text="${#temporals.format(carteraDto.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></dd>
+
+        <dt class="col-sm-4">Usuario</dt>
+        <dd class="col-sm-8" th:text="${carteraDto.nombreUsuario + ' (' + carteraDto.correoUsuario + ')'}"></dd>
+
+        <dt class="col-sm-4">Perfil de Riesgo</dt>
+        <dd class="col-sm-8" th:text="${carteraDto.perfilRiesgoDescripcion != null ? carteraDto.perfilRiesgoDescripcion : 'Sin asignar'}"></dd>
+      </dl>
+
+      <div class="text-end mt-4">
+
+        <a th:href="@{/simulaciones/simular-cartera/{id}(id=${carteraDto.idCartera})}"
+           class="btn btn-outline-success me-2">
+          <i class="bi bi-graph-up-arrow"></i> Simular esta cartera
+        </a>
+
+        <a th:href="@{'/carteras/add-instrumento/' + ${carteraDto.idCartera}}" class="btn btn-outline-success me-2">
+          <i class="bi bi-plus-circle"></i> Agregar Instrumento
+        </a>
+        <a th:href="@{'/carteras/edit/' + ${carteraDto.idCartera}}" class="btn btn-outline-primary me-2">
+          <i class="bi bi-pencil"></i> Editar
+        </a>
+        <a th:href="@{'/carteras/delete/' + ${carteraDto.idCartera}}"
+           class="btn btn-outline-danger"
+           onclick="return confirm('¿Estás seguro de eliminar esta cartera?');">
+          <i class="bi bi-trash"></i> Eliminar
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensajes -->
+  <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert" id="alert-success">
+    <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${mensaje}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+  </div>
+  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert" id="alert-error">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${error}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+  </div>
+
+  <!-- Tabla de instrumentos -->
+  <div class="card shadow-sm border-0 mt-4">
+    <div class="card-header bg-secondary text-white">
+      <h6 class="mb-0">Instrumentos Asociados</h6>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+          <tr>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Monto Invertido</th>
+            <th>Tasa</th>
+            <th>Plazo</th>
+            <th>Precio Mercado</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="inst : ${instrumentosCartera}">
+            <td th:text="${inst.nombreInstrumento}"></td>
+            <td th:text="${inst.tipoInstrumentoDescripcion}"></td>
+            <td th:text="${#numbers.formatDecimal(inst.montoInvertido, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></td>
+            <td th:text="${#numbers.formatDecimal(inst.tasaInteres, 1, 'COMMA', 2, 'POINT')} + ' %'"></td>
+            <td th:text="${inst.plazoTexto != null ? inst.plazoTexto : 'N/D'}"></td>
+            <td th:text="${#numbers.formatDecimal(inst.precioMercado, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></td>
+            <td class="text-end">
+              <a th:href="@{'/instrumentos-cartera/edit/' + ${inst.idInstrumentosCartera}}" class="btn btn-outline-primary btn-sm me-1">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <a th:href="@{'/instrumentos-cartera/delete/' + ${inst.idInstrumentosCartera}}"
+                 class="btn btn-outline-danger btn-sm"
+                 onclick="return confirm('¿Deseas eliminar este instrumento de la cartera?');">
+                <i class="bi bi-trash"></i>
+              </a>
+            </td>
+          </tr>
+          <tr th:if="${instrumentosCartera.isEmpty()}">
+            <td colspan="7" class="text-center text-muted">No hay instrumentos asociados a esta cartera.</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<script>
+  setTimeout(() => {
+    const success = document.getElementById("alert-success");
+    const error = document.getElementById("alert-error");
+    if (success) success.remove();
+    if (error) error.remove();
+  }, 5000);
+</script>
+</body>
+</html>

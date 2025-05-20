@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Editar Usuario</h5>
+      <a th:href="@{/usuarios/list}" class="btn btn-light btn-sm">
+        <i class="bi bi-arrow-left-circle"></i> Volver a la lista
+      </a>
+    </div>
+
+    <div class="card-body">
+
+      <!-- Alerta de éxito -->
+      <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert" id="alert-success">
+        <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${mensaje}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+
+      <!-- Alerta de error -->
+      <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert" id="alert-error">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+
+      <form th:action="@{'/usuarios/edit/' + ${usuarioAdminDto.idUsuario}}"
+            th:object="${usuarioAdminDto}" method="post" class="row g-3">
+
+        <input type="hidden" th:field="*{idUsuario}" />
+
+        <!-- Nombre -->
+        <div class="col-md-4">
+          <label class="form-label">Nombre</label>
+          <input type="text" th:field="*{nombre}" class="form-control form-control-sm" placeholder="Nombre">
+          <div class="text-danger" th:errors="*{nombre}"></div>
+        </div>
+
+        <!-- Apellido paterno -->
+        <div class="col-md-4">
+          <label class="form-label">Apellido Paterno</label>
+          <input type="text" th:field="*{apellidoPaterno}" class="form-control form-control-sm" placeholder="Apellido Paterno">
+          <div class="text-danger" th:errors="*{apellidoPaterno}"></div>
+        </div>
+
+        <!-- Apellido materno -->
+        <div class="col-md-4">
+          <label class="form-label">Apellido Materno</label>
+          <input type="text" th:field="*{apellidoMaterno}" class="form-control form-control-sm" placeholder="Apellido Materno">
+          <div class="text-danger" th:errors="*{apellidoMaterno}"></div>
+        </div>
+
+        <!-- Correo -->
+        <div class="col-md-6">
+          <label class="form-label">Correo Electrónico</label>
+          <input type="email" th:field="*{correo}" class="form-control form-control-sm" placeholder="correo@ejemplo.com">
+          <div class="text-danger" th:errors="*{correo}"></div>
+        </div>
+
+        <!-- Contraseña nueva -->
+        <div class="col-md-6">
+          <label class="form-label">Nueva Contraseña (opcional)</label>
+          <input type="password" th:field="*{contrasena}" class="form-control form-control-sm" placeholder="Dejar en blanco si no desea cambiarla">
+          <div class="text-danger" th:errors="*{contrasena}"></div>
+        </div>
+
+        <!-- Tipo de Usuario -->
+        <div class="col-md-6">
+          <label class="form-label">Tipo de Usuario</label>
+          <select th:field="*{idTipoUsuario}" class="form-select form-select-sm">
+            <option value="">Seleccionar tipo</option>
+            <option th:each="tipo : ${tiposUsuario}"
+                    th:value="${tipo.idTipoUsuario}"
+                    th:text="${tipo.descripcion}">
+            </option>
+          </select>
+          <div class="text-danger" th:errors="*{idTipoUsuario}"></div>
+        </div>
+
+        <!-- Rol -->
+        <div class="col-md-6">
+          <label class="form-label">Rol</label>
+          <select th:field="*{idRol}" class="form-select form-select-sm">
+            <option value="">Seleccionar rol</option>
+            <option th:each="rol : ${roles}"
+                    th:value="${rol.idRol}"
+                    th:text="${rol.nombre}">
+            </option>
+          </select>
+          <div class="text-danger" th:errors="*{idRol}"></div>
+        </div>
+
+        <!-- Botones -->
+        <div class="col-12 text-end">
+          <button type="submit" class="btn btn-warning">
+            <i class="bi bi-save"></i> Guardar Cambios
+          </button>
+          <a th:href="@{/usuarios/list}" class="btn btn-secondary">
+            <i class="bi bi-x-circle"></i> Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<!-- Script para ocultar alertas después de 5 segundos -->
+<script>
+  setTimeout(() => {
+    const success = document.getElementById("alert-success");
+    const error = document.getElementById("alert-error");
+    if (success) success.remove();
+    if (error) error.remove();
+  }, 5000);
+</script>
+</body>
+</html>

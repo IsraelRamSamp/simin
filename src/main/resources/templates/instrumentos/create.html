@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container mt-5">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-success text-white">
+      <h5 class="mb-0">Crear Nuevo Instrumento</h5>
+    </div>
+    <div class="card-body">
+
+      <!-- Mensaje de error general -->
+      <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+
+      <form th:action="@{/instrumentos/create}" th:object="${instrumentoDto}" method="post" class="row g-3 needs-validation" novalidate>
+
+        <div class="col-md-6">
+          <label for="nombre" class="form-label">Nombre</label>
+          <input type="text" th:field="*{nombre}" class="form-control" id="nombre" required>
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}">Nombre inválido</div>
+        </div>
+
+        <div class="col-md-6">
+          <label for="idTipoInstrumento" class="form-label">Tipo de Instrumento</label>
+          <select th:field="*{idTipoInstrumento}" class="form-select" id="idTipoInstrumento" required>
+            <option value="">Seleccione un tipo</option>
+            <option th:each="tipo : ${tiposInstrumento}"
+                    th:value="${tipo.idTipoInstrumento}"
+                    th:text="${tipo.descripcion}">
+            </option>
+          </select>
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('idTipoInstrumento')}" th:errors="*{idTipoInstrumento}">Requerido</div>
+        </div>
+
+        <div class="col-12 alerta-info-bono" style="display: none;">
+          <div class="alert alert-info mt-3" role="alert">
+            Para instrumentos tipo <strong>BONO</strong>, <strong>UDIBONOS</strong> o <strong>BONDES</strong>, se utiliza la <strong>tasa cupón</strong> y no la <strong>tasa de interés</strong>. Además, el <strong>precio de mercado</strong> debe ser capturado manualmente.
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <label for="plazoMeses" class="form-label">Plazo en Meses</label>
+          <input type="number" th:field="*{plazoMeses}" class="form-control" id="plazoMeses">
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('plazoMeses')}" th:errors="*{plazoMeses}"></div>
+        </div>
+
+        <div class="col-md-4">
+          <label for="plazoAnos" class="form-label">Plazo en Años</label>
+          <input type="number" th:field="*{plazoAnos}" class="form-control" id="plazoAnos">
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('plazoAnos')}" th:errors="*{plazoAnos}"></div>
+        </div>
+
+        <div class="col-md-4">
+          <label for="frecuenciaPagos" class="form-label">Frecuencia de Pagos</label>
+          <select th:field="*{frecuenciaPagos}" class="form-select" id="frecuenciaPagos" required>
+            <option value="">Seleccione una opción</option>
+            <option value="Mensual">Mensual</option>
+            <option value="Trimestral">Trimestral</option>
+            <option value="Semestral">Semestral</option>
+            <option value="Anual">Anual</option>
+          </select>
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('frecuenciaPagos')}" th:errors="*{frecuenciaPagos}"></div>
+        </div>
+
+        <div class="col-md-4 campo-tasa-interes">
+          <label for="tasaInteres" class="form-label">Tasa de Interés (%)</label>
+          <input type="number" th:field="*{tasaInteres}" class="form-control" step="0.0001" id="tasaInteres" required>
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('tasaInteres')}" th:errors="*{tasaInteres}"></div>
+        </div>
+
+        <div class="col-md-4">
+          <label for="valorNominal" class="form-label">Valor Nominal</label>
+          <input type="number" th:field="*{valorNominal}" class="form-control" step="0.01" id="valorNominal" required>
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('valorNominal')}" th:errors="*{valorNominal}"></div>
+        </div>
+
+        <div class="col-md-4 campo-precio-mercado" style="display: none;">
+          <label for="precioMercado" class="form-label">Precio de Mercado (solo bonos)</label>
+          <input type="number" th:field="*{precioMercado}" class="form-control" step="0.0001" id="precioMercado" />
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('precioMercado')}" th:errors="*{precioMercado}"></div>
+        </div>
+
+        <div class="col-md-6">
+          <label for="tipoRendimiento" class="form-label">Tipo de Rendimiento</label>
+          <select th:field="*{tipoRendimiento}" class="form-select" id="tipoRendimiento" required>
+            <option value="">Seleccione un tipo</option>
+            <option value="Fijo">Fijo</option>
+            <option value="Variable">Variable</option>
+          </select>
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('tipoRendimiento')}" th:errors="*{tipoRendimiento}"></div>
+        </div>
+
+        <div class="col-md-6">
+          <label for="descripcionAdicional" class="form-label">Descripción Adicional</label>
+          <textarea th:field="*{descripcionAdicional}" class="form-control" id="descripcionAdicional" rows="3"></textarea>
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('descripcionAdicional')}" th:errors="*{descripcionAdicional}"></div>
+        </div>
+
+        <!-- Campos específicos de BONO o UDIBONOS -->
+        <div class="campos-bonos row g-3" style="display: none;">
+          <div class="col-md-4">
+            <label for="fechaEmision" class="form-label">Fecha de Emisión</label>
+            <input type="datetime-local" th:field="*{fechaEmision}" class="form-control" id="fechaEmision" />
+          </div>
+          <div class="col-md-4">
+            <label for="fechaVencimiento" class="form-label">Fecha de Vencimiento</label>
+            <input type="datetime-local" th:field="*{fechaVencimiento}" class="form-control" id="fechaVencimiento" />
+          </div>
+          <div class="col-md-4">
+            <label for="tasaCupon" class="form-label">Tasa Cupón (%)</label>
+            <input type="number" th:field="*{tasaCupon}" step="0.0001" class="form-control" id="tasaCupon" />
+          </div>
+        </div>
+
+        <div class="col-12 d-flex justify-content-end">
+          <a th:href="@{/instrumentos/list}" class="btn btn-secondary me-2">Cancelar</a>
+          <button type="submit" class="btn btn-success">Guardar Instrumento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<script>
+  const tipoSelect = document.getElementById("idTipoInstrumento");
+  const camposBonos = document.querySelector(".campos-bonos");
+  const campoTasaInteres = document.querySelector(".campo-tasa-interes");
+  const campoPrecioMercado = document.querySelector(".campo-precio-mercado");
+  const alertaInfo = document.querySelector(".alerta-info-bono");
+
+  function toggleCamposBonos() {
+    const tipoTexto = tipoSelect.options[tipoSelect.selectedIndex].text.toUpperCase();
+    const requiereCamposEspeciales = ["BONO", "UDIBONOS", "BONDES"].includes(tipoTexto);
+
+    camposBonos.style.display = requiereCamposEspeciales ? "flex" : "none";
+    campoTasaInteres.style.display = requiereCamposEspeciales ? "none" : "block";
+    campoPrecioMercado.style.display = requiereCamposEspeciales ? "block" : "none";
+    if (alertaInfo) {
+      alertaInfo.style.display = requiereCamposEspeciales ? "block" : "none";
+    }
+  }
+
+  tipoSelect.addEventListener("change", toggleCamposBonos);
+  window.addEventListener("load", toggleCamposBonos);
+</script>
+
+</body>
+</html>

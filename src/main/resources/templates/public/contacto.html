@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+  <!-- Encabezado -->
+  <div class="text-center mb-5">
+    <h1 class="fw-bold display-5 animate__animated animate__fadeInDown">Contáctanos</h1>
+    <p class="text-muted fs-5 animate__animated animate__fadeInUp animate__delay-1s">
+      ¿Tienes preguntas, comentarios o sugerencias? ¡Nos encantaría saber de ti!
+    </p>
+  </div>
+
+  <div class="row g-5">
+    <!-- Formulario de contacto (solo visual, no funcional por ahora) -->
+    <div class="col-md-7">
+      <div class="card border-0 shadow-sm animate__animated animate__fadeInLeft">
+        <div class="card-body">
+          <h5 class="card-title mb-4">Envía un mensaje</h5>
+          <form>
+            <div class="mb-3">
+              <label for="nombre" class="form-label">Nombre completo</label>
+              <input type="text" class="form-control" id="nombre" placeholder="Tu nombre completo" disabled>
+            </div>
+            <div class="mb-3">
+              <label for="correo" class="form-label">Correo electrónico</label>
+              <input type="email" class="form-control" id="correo" placeholder="tu@email.com" disabled>
+            </div>
+            <div class="mb-3">
+              <label for="mensaje" class="form-label">Mensaje</label>
+              <textarea class="form-control" id="mensaje" rows="4" placeholder="Escribe tu mensaje aquí..." disabled></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" disabled>
+              <i class="bi bi-send-fill me-1"></i> Enviar
+            </button>
+            <p class="form-text text-muted mt-2">El formulario es solo ilustrativo. SIMIN no recolecta información personal.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Datos institucionales -->
+    <div class="col-md-5">
+      <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeInRight">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Información de contacto</h5>
+          <p><i class="bi bi-geo-alt-fill me-2 text-primary"></i><strong>Ubicación:</strong> DGTIC, UNAM, CDMX</p>
+          <p><i class="bi bi-envelope-fill me-2 text-primary"></i><strong>Correo:</strong> israelsamperio7@simin.com</p>
+          <p><i class="bi bi-globe2 me-2 text-primary"></i><strong>Web:</strong> www.simin.com</p>
+          <hr>
+          <h6 class="text-muted">Horario de atención</h6>
+          <p class="mb-0">Lunes a Viernes: 9:00 a.m. – 6:00 p.m.</p>
+          <p>Sábados y Domingos: Cerrado</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<!-- Animaciones -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"/>
+</body>
+</html>

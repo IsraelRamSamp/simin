@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Iniciar Sesión - SIMIN</title>
+  <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+  <link th:href="@{/icons/bootstrap-icons.css}" rel="stylesheet">
+  <link th:href="@{/theme/miestilo.css}" rel="stylesheet">
+  <style>
+    .simin-header {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-weight: 700;
+      font-size: 2.2rem;
+      color: #0d6efd;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+  <div class="card shadow-sm p-4" style="min-width: 350px; max-width: 400px;">
+
+    <div class="text-center mb-4 simin-header">
+      <div class="simin-brand">
+        <span class="s-inicial">S</span>IMIN
+      </div>
+      <div class="simin-subtitle">
+        Sistema de Inversión en Instrumentos Financieros
+      </div>
+    </div>
+
+    <!-- Título del formulario -->
+    <div class="text-center mb-3">
+      <h5 class="fw-bold">Iniciar Sesión</h5>
+    </div>
+
+    <!-- Mensaje de error -->
+    <div th:if="${loginError}" class="alert alert-danger text-center">
+      Correo o contraseña incorrectos.
+    </div>
+
+    <form th:action="@{/login}" method="post" th:object="${loginDto}">
+      <div class="mb-3">
+        <label for="correo" class="form-label">Correo electrónico</label>
+        <input type="email" th:field="*{correo}" class="form-control" id="correo" placeholder="nombre@correo.com" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="contrasena" class="form-label">Contraseña</label>
+        <div class="input-group">
+          <input type="password" th:field="*{contrasena}" class="form-control" id="contrasena" placeholder="********" required>
+          <span class="input-group-text">
+            <i class="bi bi-eye-slash" id="toggleLoginPassword" style="cursor: pointer;"></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="recordarme" name="remember-me">
+        <label class="form-check-label" for="recordarme">Recordarme</label>
+      </div>
+
+      <div class="d-grid">
+        <button type="submit" id="btnLogin" class="btn btn-primary">
+          <span id="btnText">Ingresar</span>
+          <span id="btnSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+        </button>
+      </div>
+
+      <div class="mt-3 text-center">
+        <a th:href="@{/public/registro}" class="text-decoration-none">¿No tienes cuenta? Regístrate</a><br>
+        <a th:href="@{/home}" class="text-decoration-none text-muted small"><i class="bi bi-house-door"></i> Volver al inicio</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const togglePassword = document.getElementById("toggleLoginPassword");
+    const passwordInput = document.getElementById("contrasena");
+
+    togglePassword.addEventListener("click", function () {
+      const isPassword = passwordInput.getAttribute("type") === "password";
+      passwordInput.setAttribute("type", isPassword ? "text" : "password");
+      togglePassword.classList.toggle("bi-eye");
+      togglePassword.classList.toggle("bi-eye-slash");
+    });
+
+    const btn = document.getElementById('btnLogin');
+    const btnText = document.getElementById('btnText');
+    const btnSpinner = document.getElementById('btnSpinner');
+    btn.addEventListener('click', function () {
+      btnText.classList.add('d-none');
+      btnSpinner.classList.remove('d-none');
+    });
+  });
+</script>
+
+<style>
+  .simin-brand {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 700;
+    font-size: 2.5rem;
+    letter-spacing: 1px;
+    background: linear-gradient(90deg, #0d6efd, #6610f2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    animation: fadeInDown 1s ease-out;
+  }
+
+  .s-inicial {
+    font-size: 3rem;
+    color: #0d6efd;
+    font-weight: 900;
+    text-shadow: 1px 2px 3px rgba(13, 110, 253, 0.4);
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+</body>
+</html>

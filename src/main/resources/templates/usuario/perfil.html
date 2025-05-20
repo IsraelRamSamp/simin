@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Mi Perfil</h5>
+          <div class="alert alert-success text-center" th:if="${successMessage}" th:text="${successMessage}"></div>
+          <a th:href="@{/usuario/perfil/editar}" class="btn btn-outline-light btn-sm">
+            <i class="bi bi-pencil-square"></i> Editar
+          </a>
+        </div>
+        <div class="card-body">
+          <div class="card-body text-center">
+            <img th:if="${usuario != null}" th:src="${usuario.avatarUrl}" alt="Avatar" class="rounded-circle mb-3" width="120">
+          </div>
+
+          <dl class="row">
+            <dt class="col-sm-4">Nombre completo</dt>
+            <dd class="col-sm-8" th:text="${usuario.nombre + ' ' + usuario.apellidoPaterno + ' ' + (usuario.apellidoMaterno != null ? usuario.apellidoMaterno : '')}">Nombre completo</dd>
+
+            <dt class="col-sm-4">Correo electrónico</dt>
+            <dd class="col-sm-8" th:text="${usuario.correo}">correo@ejemplo.com</dd>
+
+            <dt class="col-sm-4">Tipo de usuario</dt>
+            <dd class="col-sm-8" th:text="${usuario.tipoUsuarioDescripcion}">Tipo</dd>
+
+            <dt class="col-sm-4">Fecha de registro</dt>
+            <dd class="col-sm-8" th:text="${fechaFormateada}">01/01/2025</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container my-5">
+  <div class="text-center my-5">
+    <h1 th:text="${titulo}">Bienvenido a SIMIN</h1>
+    <p class="lead" th:text="${descripcion}">
+      Simulador profesional de inversiones en renta fija.
+    </p>
+    <img th:src="@{/image/simin.png}" class="img-fluid mt-3" style="max-width:400px;" alt="SIMIN">
+  </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

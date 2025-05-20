@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Editar Perfil</h5>
+        </div>
+        <div class="card-body">
+
+          <!-- Mensajes de éxito o error general -->
+          <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+          <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+          <form th:action="@{/usuario/perfil/editar}" th:object="${usuario}" method="post">
+            <!-- Token CSRF -->
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <div class="mb-3">
+              <label class="form-label">Nombre</label>
+              <input type="text" class="form-control" th:field="*{nombre}" placeholder="Nombre" required minlength="2">
+              <div class="text-danger" th:errors="*{nombre}"></div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Apellido paterno</label>
+              <input type="text" class="form-control" th:field="*{apellidoPaterno}" placeholder="Apellido paterno" required minlength="2">
+              <div class="text-danger" th:errors="*{apellidoPaterno}"></div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Apellido materno</label>
+              <input type="text" class="form-control" th:field="*{apellidoMaterno}" placeholder="Apellido materno" required minlength="2">
+              <div class="text-danger" th:errors="*{apellidoMaterno}"></div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Correo electrónico</label>
+              <input type="email" class="form-control" th:field="*{correo}" placeholder="Correo" required>
+              <div class="text-danger" th:errors="*{correo}"></div>
+            </div>
+
+            <!-- Campo de contraseña con icono de visibilidad -->
+            <div class="mb-3">
+              <label class="form-label">Nueva contraseña</label>
+              <div class="input-group">
+                <input type="password" class="form-control" th:field="*{nuevaContrasena}" placeholder="Dejar en blanco si no desea cambiarla" minlength="6" id="nuevaContrasena">
+                <span class="input-group-text">
+                  <i class="bi bi-eye-slash" id="togglePassword" style="cursor: pointer;"></i>
+                </span>
+              </div>
+              <div class="text-danger" th:errors="*{nuevaContrasena}"></div>
+            </div>
+
+            <div class="text-end">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> Guardar cambios
+              </button>
+              <a th:href="@{/usuario/perfil}" class="btn btn-secondary">Cancelar</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<!-- Script para alternar visibilidad de contraseña -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const togglePassword = document.querySelector("#togglePassword");
+    const passwordInput = document.querySelector("#nuevaContrasena");
+
+    togglePassword.addEventListener("click", function () {
+      const isPassword = passwordInput.getAttribute("type") === "password";
+      passwordInput.setAttribute("type", isPassword ? "text" : "password");
+      togglePassword.classList.toggle("bi-eye");
+      togglePassword.classList.toggle("bi-eye-slash");
+    });
+  });
+</script>
+
+</body>
+</html>

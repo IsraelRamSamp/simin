@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Simular Cartera</h5>
+            <a th:href="@{/carteras/list}" class="btn btn-light btn-sm">
+                <i class="bi bi-arrow-left-circle"></i> Volver a carteras
+            </a>
+        </div>
+
+        <div class="card-body">
+            <!-- Nombre de la cartera -->
+            <div class="mb-4">
+                <h6 class="text-muted"></h6>
+                <h5 th:text="${simulacionDto.nombreCartera}">Nombre Cartera</h5>
+            </div>
+
+            <!-- Tabla detallada de instrumentos -->
+            <div th:each="entry : ${detallesPorTipo}">
+                <h5 class="text-primary text-uppercase mt-4" th:text="'Instrumentos tipo ' + ${entry.key}"></h5>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle text-center small">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Instrumento</th>
+                            <th>Plazo</th>
+                            <th>Monto Invertido</th>
+                            <th>Títulos</th>
+                            <th>Tasa</th>
+                            <th>Inversión</th>
+                            <th>Interés</th>
+                            <th>Títulos Bonddia</th>
+                            <th>Inversión Bonddia</th>
+                            <th>Interés Bonddia</th>
+                            <th>Remanente</th>
+                            <th>ISR</th>
+                            <th>Valor Final</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="detalle : ${entry.value}"
+                            th:with="
+                                inversionTotal = ${detalle.inversion + (detalle.inversionBonddia != null ? detalle.inversionBonddia : 0)},
+                                interesBonddia = ${detalle.interesBonddia != null} ? ${detalle.interesBonddia} : 0,
+                                inversionBonddia = ${detalle.inversionBonddia != null} ? ${detalle.inversionBonddia} : 0,
+                                remanente = ${detalle.remanente != null} ? ${detalle.remanente} : 0,
+                                isr = ${detalle.isrCalculado != null} ? ${detalle.isrCalculado} : 0,
+                                titulosBonddia = ${detalle.titulosBonddia != null} ? ${detalle.titulosBonddia} : 0
+                            ">
+                            <td th:text="${detalle.nombreInstrumento}">Instrumento</td>
+                            <td th:text="${detalle.plazoTexto}">-</td>
+                            <td th:text="${#numbers.formatDecimal(detalle.montoInvertido, 1, 'COMMA', 2, 'POINT')} + ' MXN'">0.00</td>
+                            <td th:text="${detalle.titulos}">0</td>
+                            <td>
+                                <span th:text="${tipoUsaTasaCupon[entry.key]} ? 'Tasa Cupón' : 'Tasa Bruta'"></span>
+                                <span th:text="${#numbers.formatDecimal(detalle.tasaBruta, 1, 'COMMA', 2, 'POINT')} + ' %'"></span>
+                            </td>
+                            <td th:text="${#numbers.formatDecimal(detalle.inversion, 1, 'COMMA', 2, 'POINT')} + ' MXN'">0.00</td>
+                            <td th:text="${#numbers.formatDecimal(detalle.interes, 1, 'COMMA', 2, 'POINT')} + ' MXN'">0.00</td>
+                            <td th:text="${titulosBonddia}">0</td>
+                            <td th:text="${#numbers.formatDecimal(inversionBonddia, 1, 'COMMA', 2, 'POINT')} + ' MXN'">0.00</td>
+                            <td th:text="${#numbers.formatDecimal(interesBonddia, 1, 'COMMA', 2, 'POINT')} + ' MXN'">0.00</td>
+                            <td th:text="${#numbers.formatDecimal(remanente, 1, 'COMMA', 2, 'POINT')} + ' MXN'">0.00</td>
+                            <td th:text="${#numbers.formatDecimal(isr, 1, 'COMMA', 2, 'POINT')} + ' MXN'">0.00</td>
+                            <td th:text="${#numbers.formatDecimal(detalle.valorFinal, 1, 'COMMA', 2, 'POINT')} + ' MXN'">0.00</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Resultados globales -->
+            <div class="row text-center mt-5">
+                <div class="col-md-3 mb-3">
+                    <div class="card border-success shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title text-success">Inversión Total</h6>
+                            <p class="card-text h5" th:text="${#numbers.formatDecimal(simulacionDto.montoInvertido, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-info shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title text-info">Interés Bruto</h6>
+                            <p class="card-text h5" th:text="${#numbers.formatDecimal(simulacionDto.interesBruto, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-danger shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title text-danger">ISR</h6>
+                            <p class="card-text h5" th:text="${#numbers.formatDecimal(simulacionDto.isr, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-dark shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title text-dark">Obtienes al Final</h6>
+                            <p class="card-text h5 text-success fw-bold" th:text="${#numbers.formatDecimal(simulacionDto.valorFinal, 1, 'COMMA', 2, 'POINT')} + ' MXN'"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Guardar -->
+            <form th:action="@{/simulaciones/save}" th:object="${simulacionDto}" method="post" class="text-end mt-4">
+                <input type="hidden" th:field="*{idUsuario}" />
+                <input type="hidden" th:field="*{idCartera}" />
+                <input type="hidden" th:field="*{montoInvertido}" />
+                <input type="hidden" th:field="*{fechaFinalizacion}" />
+                <input type="hidden" th:field="*{valorFinal}" />
+                <input type="hidden" th:field="*{interesBruto}" />
+                <input type="hidden" th:field="*{isr}" />
+                <input type="hidden" th:field="*{plazoTexto}" />
+
+                <div class="d-flex justify-content-end mt-4 mb-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input fs-4" type="checkbox" id="compartidaAnalista" name="compartidaAnalista"
+                               th:checked="${simulacionDto.compartidaAnalista}" />
+                        <label class="form-check-label fs-5" for="compartidaAnalista">
+                            Compartir con analista
+                            <i class="bi bi-question-circle-fill ms-2 text-secondary"
+                               data-bs-toggle="tooltip"
+                               data-bs-placement="top"
+                               title="Permite que los analistas accedan a esta simulación."></i>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-save"></i> Guardar Simulación
+                </button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
+    });
+</script>
+</body>
+</html>

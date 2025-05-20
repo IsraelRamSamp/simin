@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
+      lang="es">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container py-5">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Simular Instrumento</h5>
+      <span sec:authorize="hasRole('ROLE_ADMIN')">
+  <a th:href="@{/instrumentos/list}" class="btn btn-light btn-sm">
+    <i class="bi bi-arrow-left-circle"></i> Volver a la lista
+  </a>
+</span>
+      <span sec:authorize="hasAnyRole('ROLE_INVERSIONISTA', 'ROLE_ANALISTA')">
+  <a th:href="@{/instrumentos/consulta/list-public}" class="btn btn-light btn-sm">
+    <i class="bi bi-arrow-left-circle"></i> Volver a la lista
+  </a>
+</span>
+    </div>
+    <div class="card-body">
+
+      <!-- Alerta de error -->
+      <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert" id="alert-error">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+
+      <!-- Formulario -->
+      <form th:action="@{/simulaciones/calcular}" th:object="${simulacionDto}" method="post" class="row g-3">
+        <!-- Hidden Fields -->
+        <input type="hidden" th:field="*{idInstrumento}" />
+        <input type="hidden" th:field="*{idUsuario}" />
+        <input type="hidden" th:field="*{idCartera}" />
+        <input type="hidden" th:field="*{precioMercado}" />
+        <input type="hidden" th:field="*{valorNominal}" />
+        <input type="hidden" th:field="*{tasaInteres}" />
+        <input type="hidden" th:field="*{fechaFinalizacion}" />
+        <input type="hidden" th:field="*{tipoInstrumentoDescripcion}" />
+        <input type="hidden" th:field="*{nombreInstrumento}" />
+        <input type="hidden" th:field="*{plazoTexto}" />
+
+        <!-- Información del instrumento -->
+        <div class="col-md-6">
+          <label class="form-label">Nombre del Instrumento</label>
+          <input type="text" class="form-control" th:value="${simulacionDto.nombreInstrumento}" readonly />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Tipo de Instrumento</label>
+          <input type="text" class="form-control" th:value="${simulacionDto.tipoInstrumentoDescripcion}" readonly />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label" th:text="${esTasaCupon} ? 'Tasa Cupón' : 'Tasa Bruta'">Tasa</label>
+          <input type="text" class="form-control"
+                 th:value="${#numbers.formatDecimal(simulacionDto.tasaInteres, 1, 'COMMA', 2, 'POINT')} + ' %'" readonly />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Valor Nominal</label>
+          <input type="text" class="form-control"
+                 th:value="${#numbers.formatDecimal(simulacionDto.valorNominal, 1, 'COMMA', 2, 'POINT')} + ' MXN'" readonly />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Monto a Invertir</label>
+          <input type="number" class="form-control" th:field="*{montoInvertido}" placeholder="Ej. 10000" required />
+          <div class="text-danger" th:errors="*{montoInvertido}"></div>
+        </div>
+
+        <div class="col-md-6" id="campo-plazo-manual" style="display: none;">
+          <label class="form-label">Plazo en días</label>
+          <input type="number" th:field="*{plazoDiasManual}" class="form-control" placeholder="Ej. 1" min="1"/>
+          <div class="text-danger" th:errors="*{plazoDiasManual}"></div>
+        </div>
+
+        <div class="col-md-6" id="campo-plazo-predefinido">
+          <label class="form-label">Plazo definido</label>
+          <input type="text" class="form-control" th:value="*{plazoTexto}" readonly /> <br>
+        </div>
+
+        <div class="col-12 text-end">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-calculator"></i> Calcular rendimiento
+          </button>
+        </div>
+      </form>
+
+      <!-- Resultados visuales -->
+      <div th:if="${simulacionDto.rendimiento != null}" class="mt-5">
+        <div class="card shadow border-primary">
+          <div class="card-header bg-primary text-white text-center fw-bold fs-5" th:text="${simulacionDto.nombreInstrumento}">Instrumento</div>
+          <div class="card-body text-center">
+            <h6 class="text-muted mb-2">Monto invertido:</h6>
+            <p class="fs-5 fw-bold text-primary"
+               th:text="${#numbers.formatDecimal(simulacionDto.montoInvertido, 1, 'COMMA', 2, 'POINT')} + ' MXN'">$10,000.00</p>
+
+            <div class="row" th:each="detalle, iterStat : ${simulacionDto.detalles}">
+              <input type="hidden" th:name="'detalles[' + ${iterStat.index} + '].nombreInstrumento'" th:value="${detalle.nombreInstrumento}" />
+              <input type="hidden" th:name="'detalles[' + ${iterStat.index} + '].tipoInstrumento'" th:value="${detalle.tipoInstrumento}" />
+              <input type="hidden" th:name="'detalles[' + ${iterStat.index} + '].tasaBruta'" th:value="${detalle.tasaBruta}" />
+              <input type="hidden" th:name="'detalles[' + ${iterStat.index} + '].titulos'" th:value="${detalle.titulos}" />
+              <input type="hidden" th:name="'detalles[' + ${iterStat.index} + '].inversion'" th:value="${detalle.inversion}" />
+              <input type="hidden" th:name="'detalles[' + ${iterStat.index} + '].interes'" th:value="${detalle.interes}" />
+              <input type="hidden" th:name="'detalles[' + ${iterStat.index} + '].remanente'" th:value="${detalle.remanente}" />
+              <input type="hidden" th:name="'detalles[' + ${iterStat.index} + '].valorFinal'" th:value="${detalle.valorFinal}" />
+              <input type="hidden" th:name="'detalles[' + ${iterStat.index} + '].interesBonddia'" th:value="${detalle.interesBonddia}" />
+              <input type="hidden" th:name="'detalles[' + ${iterStat.index} + '].inversionBonddia'" th:value="${detalle.inversionBonddia}" />
+              <input type="hidden" th:name="'detalles[' + ${iterStat.index} + '].titulosBonddia'" th:value="${detalle.titulosBonddia}" />
+
+              <div class="col-md-6 text-start">
+                <h6 class="text-uppercase fw-bold mt-3" th:text="${detalle.nombreInstrumento}">Instrumento</h6>
+                <p><strong>Títulos:</strong> <span th:text="${detalle.titulos}">0</span></p>
+                <p>
+                  <strong th:text="${esTasaCupon} ? 'Tasa Cupón:' : 'Tasa Bruta:'">Tasa</strong>
+                  <span th:text="${#numbers.formatDecimal(detalle.tasaBruta, 1, 'COMMA', 2, 'POINT')} + ' %'">0.00%</span>
+                </p>
+                <p><strong>Inversión:</strong>
+                  <span th:text="${#numbers.formatDecimal(detalle.inversion, 1, 'COMMA', 2, 'POINT')} + ' MXN'">0.00 MXN</span>
+                </p>
+                <p><strong>Interés:</strong>
+                  <span th:text="${#numbers.formatDecimal(detalle.interes, 1, 'COMMA', 2, 'POINT')} + ' MXN'">0.00 MXN</span>
+                </p>
+
+                <div th:if="${detalle.inversionBonddia != null && detalle.inversionBonddia > 0}">
+                  <hr/>
+                  <h6 class="text-uppercase text-muted fw-bold">BONDDIA</h6>
+                  <p><strong>Títulos:</strong> <span th:text="${detalle.titulosBonddia}">0</span></p>
+                  <p><strong>Inversión:</strong> <span th:text="${#numbers.formatDecimal(detalle.inversionBonddia, 1, 'COMMA', 2, 'POINT')} + ' MXN'">0.00</span></p>
+                  <p><strong>Interés:</strong> <span th:text="${#numbers.formatDecimal(detalle.interesBonddia, 1, 'COMMA', 2, 'POINT')} + ' MXN'">0.00</span></p>
+                </div>
+
+                <p><strong>Remanente:</strong> <span th:text="${#numbers.formatDecimal(detalle.remanente, 1, 'COMMA', 2, 'POINT')} + ' MXN'">0.00 MXN</span></p>
+              </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+              <div class="col-md-6 text-start">
+                <p><strong>ISR:</strong> <span th:text="${#numbers.formatDecimal(simulacionDto.isr, 1, 'COMMA', 2, 'POINT')} + ' MXN'">$0.00</span></p>
+              </div>
+              <div class="col-md-6 text-start">
+                <p><strong>Plazo:</strong> <span th:text="${simulacionDto.plazoTexto}">28 días</span></p>
+              </div>
+            </div>
+
+            <div class="mt-4 border-top pt-3">
+              <h5 class="text-primary">Obtienes al final:</h5>
+              <p class="fs-4 fw-bold text-success"
+                 th:text="${#numbers.formatDecimal(simulacionDto.valorFinal, 1, 'COMMA', 2, 'POINT')} + ' MXN'">$0.00</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botón para guardar -->
+        <form th:action="@{/simulaciones/save}" method="post" class="text-end mt-4">
+          <input type="hidden" name="idUsuario" th:value="${simulacionDto.idUsuario}" />
+          <input type="hidden" name="idInstrumento" th:value="${simulacionDto.idInstrumento}" />
+          <input type="hidden" name="tasaInteres" th:value="${simulacionDto.tasaInteres}" />
+          <input type="hidden" name="precioMercado" th:value="${simulacionDto.precioMercado}" />
+          <input type="hidden" name="valorNominal" th:value="${simulacionDto.valorNominal}" />
+          <input type="hidden" name="idCartera" th:value="${simulacionDto.idCartera}" />
+          <input type="hidden" name="montoInvertido" th:value="${simulacionDto.montoInvertido}" />
+          <input type="hidden" name="fechaFinalizacion" th:value="${simulacionDto.fechaFinalizacion}" />
+          <input type="hidden" name="plazoDiasManual" th:value="${simulacionDto.plazoDiasManual}" />
+          <input type="hidden" name="tipoInstrumentoDescripcion" th:value="${simulacionDto.tipoInstrumentoDescripcion}" />
+          <input type="hidden" name="nombreInstrumento" th:value="${simulacionDto.nombreInstrumento}" />
+          <input type="hidden" name="plazoTexto" th:value="${simulacionDto.plazoTexto}" />
+
+          <!-- Separador visual -->
+          <hr class="my-4">
+
+          <div class="d-flex justify-content-end mb-3">
+            <div class="form-check form-switch">
+              <input class="form-check-input fs-4" type="checkbox"
+                     id="compartidaAnalista"
+                     name="compartidaAnalista"
+                     th:checked="${simulacionDto.compartidaAnalista}" />
+              <label class="form-check-label fs-5" for="compartidaAnalista">
+                Compartir con analista.
+                <i class="bi bi-question-circle-fill ms-2 text-secondary"
+                   data-bs-toggle="tooltip"
+                   data-bs-placement="top"
+                   title="Permite que los analistas accedan a esta simulación."></i>
+              </label>
+            </div>
+          </div>
+
+          <!-- Botón de guardar -->
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-save"></i> Guardar simulación
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<script>
+  setTimeout(() => {
+    const errorAlert = document.getElementById("alert-error");
+    if (errorAlert) errorAlert.remove();
+  }, 5000);
+
+  window.addEventListener("load", () => {
+    const tipoInput = document.querySelector("input[name='tipoInstrumentoDescripcion']");
+    const campoPlazoManual = document.getElementById("campo-plazo-manual");
+    const campoPlazoPredefinido = document.getElementById("campo-plazo-predefinido");
+
+    if (tipoInput && tipoInput.value.trim().toUpperCase() === "BONDDIA") {
+      campoPlazoManual.style.display = "block";
+      campoPlazoPredefinido.style.display = "none";
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
+  });
+
+</script>
+</body>
+</html>
